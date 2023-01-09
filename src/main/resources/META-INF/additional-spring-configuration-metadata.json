@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "password.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'password.secret'"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "bibliomar.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'bibliomar.secret'"
+  }
+]}
