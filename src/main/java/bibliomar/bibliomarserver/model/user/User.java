@@ -1,38 +1,29 @@
 package bibliomar.bibliomarserver.model.user;
 
-import java.sql.Date;
-import java.util.Hashtable;
+import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Type;
-import org.springframework.data.annotation.CreatedDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import bibliomar.bibliomarserver.model.library.UserLibrary;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "users")
-@Data
+@Table(name = "user")
+@Getter
+@Setter
 @NoArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long user_id;
 
-    @NotNull
-    @Column(unique = true)
+    @Id
     private String username;
     @NotNull
     @JsonIgnore
@@ -41,33 +32,21 @@ public class User {
     @NotNull
     private String email;
 
+    // Do *not* use FetchType.LAZY if you want to return this model as JSON.
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
-    @Column(name = "reading", columnDefinition = "json")
-    @Type(JsonType.class)
-    private Hashtable<String, Object> reading = new Hashtable<String, Object>();
-    @NotNull
-    @Column(name = "toRead", columnDefinition = "json")
-    @Type(JsonType.class)
-    private Hashtable<String, Object> toRead = new Hashtable<String, Object>();
-    @NotNull
-    @Column(name = "finished", columnDefinition = "json")
-    @Type(JsonType.class)
-    private Hashtable<String, Object> finished = new Hashtable<String, Object>();
-    @NotNull
-    @Column(name = "backlog", columnDefinition = "json")
-    @Type(JsonType.class)
-    private Hashtable<String, Object> backlog = new Hashtable<String, Object>();
-    @NotNull
-    @Column(name = "dropped", columnDefinition = "json")
-    @Type(JsonType.class)
-    private Hashtable<String, Object> dropped = new Hashtable<String, Object>();
+    private UserLibrary userLibrary;
 
     @NotNull
     @ColumnDefault("false")
     private boolean preMigration = false;
 
-    @CreatedDate
-    private Date joinedAt;
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    private LocalDateTime joinedAt = LocalDateTime.now();
+
+    @NotNull
+    @JsonProperty("role")
+    private UserRole role = UserRole.ROLE_USER;
 
     public User(String username, String password, String email) {
         this.username = username;
@@ -80,7 +59,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.preMigration = preMigration;
-
     }
+
 
 }

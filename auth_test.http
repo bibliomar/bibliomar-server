@@ -1,0 +1,27 @@
+###
+GET http://localhost:8080/user/all
+# You will need to manually update this everytime you call /login to test this.
+# there's also a way to use JS... but this is simplier.
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nIiwiaXNzIjoiYmlibGlvbWFyIiwiZXhwIjoxNjc0MTc5Mjg1fQ.28aMVasIJTalVZBYrI7nJBcpu0M7IF6snfEICicMHvbRUSRAxqc9YUfbxin0askaCT_3uNDjvzusPbP79Wc9Eg
+Content-Type: application/json
+
+###
+POST http://localhost:8080/user/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "Testing",
+  "password": "Testing15@",
+  "email": "testing@testing.com"
+}
+
+### Login
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+  "username": "Testing",
+  "password": "Testing15@"
+}
+

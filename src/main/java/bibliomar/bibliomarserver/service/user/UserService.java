@@ -1,0 +1,96 @@
+package bibliomar.bibliomarserver.service.user;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import bibliomar.bibliomarserver.model.library.UserLibrary;
+import bibliomar.bibliomarserver.model.security.JwtTokenResponse;
+import bibliomar.bibliomarserver.model.user.UserDetailsImpl;
+import bibliomar.bibliomarserver.model.user.UserLoginForm;
+import bibliomar.bibliomarserver.utils.JwtTokenUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import bibliomar.bibliomarserver.model.user.User;
+import bibliomar.bibliomarserver.model.user.UserRegisterForm;
+import bibliomar.bibliomarserver.repository.user.UserRepository;
+
+@Service
+public class UserService {
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+
+    @Autowired
+    private JwtTokenUtils jwtTokenUtils;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public void checkExistingUser(UserRegisterForm registerForm) {
+        User possibleExistingUser = userRepository.findByUsernameOrEmail(registerForm.getUsername(),
+                registerForm.getEmail());
+
+        if (possibleExistingUser != null) {
+            if (possibleExistingUser.getUsername().equals(registerForm.getUsername())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already in use");
+            }
+            if (possibleExistingUser.getEmail().equals(registerForm.getEmail())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
+            }
+        }
+    }
+
+    @Async
+    public void registerUser(UserRegisterForm registerForm) {
+        this.checkExistingUser(registerForm);
+
+        try {
+            User newUser = new User();
+            newUser.setUsername(registerForm.getUsername());
+            newUser.setEmail(registerForm.getEmail());
+            newUser.setRole(registerForm.getRole());
+            String hashedPassword = passwordEncoder.encode(registerForm.getPassword());
+            newUser.setPassword(hashedPassword);
+
+            UserLibrary newUserLibrary = new UserLibrary();
+            newUserLibrary.setUsername(newUser.getUsername());
+            newUser.setUserLibrary(newUserLibrary);
+            this.userRepository.save(newUser);
+
+        } catch (Exception e) {
+            // TODO: Better handle exceptions
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while registering user");
+        }
+
+    }
+
+    @Async
+    public CompletableFuture<JwtTokenResponse> authUser(UserLoginForm loginForm) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(),
+                loginForm.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String jwtToken = jwtTokenUtils.generateToken(userDetails.getUsername());
+        JwtTokenResponse jwtTokenResponse = JwtTokenResponse.build(jwtTokenUtils.verifyToken(jwtToken));
+        return CompletableFuture.completedFuture(jwtTokenResponse);
+
+    }
+
+    @Async
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+}
