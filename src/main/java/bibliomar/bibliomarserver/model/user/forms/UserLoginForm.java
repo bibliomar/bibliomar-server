@@ -1,4 +1,4 @@
-package bibliomar.bibliomarserver.model.user;
+package bibliomar.bibliomarserver.model.user.forms;
 
 import lombok.Data;
 

@@ -25,16 +25,17 @@ public class JwtTokenUtils {
     private final String issuer = "bibliomar";
 
     private final Long maxAgeInSeconds = 259200L;
+    private final Long maxPasswordlessAgeInSeconds = 86400L;
 
     @PostConstruct
-    public void configureJwt(){
+    public void configureJwt() {
         algorithmHS = Algorithm.HMAC512(jwtSecret);
         jwtVerifier = JWT.require(algorithmHS).withIssuer(issuer).build();
     }
 
-    public DecodedJWT getJwtFromHeader(HttpServletRequest request) throws JWTVerificationException{
+    public DecodedJWT getJwtFromHeader(HttpServletRequest request) throws JWTVerificationException {
         String authHeader = request.getHeader("Authorization");
-        if(authHeader == null){
+        if (authHeader == null) {
             return null;
         }
 
@@ -47,13 +48,24 @@ public class JwtTokenUtils {
         throw new JWTVerificationException("Invalid token");
     }
 
-    public String getUsernameFromJwtToken(DecodedJWT jwt){
+    public String getUsernameFromJwtToken(DecodedJWT jwt) {
         return jwt.getSubject();
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(maxAgeInSeconds);
+        Instant expiresAtInstant = expiresAt.atZone(ZoneId.systemDefault()).toInstant();
+        return JWT.create()
+                .withIssuer(this.issuer)
+                .withSubject(username)
+                .withExpiresAt(expiresAtInstant)
+                .sign(algorithmHS);
+    }
+
+    public String generatePasswordlessToken(String username) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(maxPasswordlessAgeInSeconds);
         Instant expiresAtInstant = expiresAt.atZone(ZoneId.systemDefault()).toInstant();
         return JWT.create()
                 .withIssuer(this.issuer)
@@ -65,7 +77,6 @@ public class JwtTokenUtils {
     public DecodedJWT verifyToken(String token) throws JWTVerificationException {
         return jwtVerifier.verify(token);
     }
-
 
 
 }

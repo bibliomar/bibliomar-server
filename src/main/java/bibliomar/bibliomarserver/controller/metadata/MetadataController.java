@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/metadata")
 public class MetadataController {
@@ -21,11 +23,12 @@ public class MetadataController {
     private MetadataService metadataService;
 
     @GetMapping("/{topic}/{md5}")
-    public ResponseEntity<Metadata> getMetadata(@PathVariable Topics topic, @PathVariable String md5) {
+    public ResponseEntity<Metadata> getMetadata(@PathVariable Topics topic, @PathVariable String md5)
+            throws ExecutionException, InterruptedException {
         if (topic == Topics.fiction) {
-            return ResponseEntity.ok(this.metadataService.getFictionMetadata(md5));
+            return ResponseEntity.ok(this.metadataService.getFictionMetadata(md5).get());
         } else if (topic == Topics.scitech) {
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok(this.metadataService.getScitechMetadata(md5).get());
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid topic");
         }

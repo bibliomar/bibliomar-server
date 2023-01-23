@@ -6,7 +6,9 @@ import java.util.concurrent.CompletableFuture;
 import bibliomar.bibliomarserver.model.library.UserLibrary;
 import bibliomar.bibliomarserver.model.security.JwtTokenResponse;
 import bibliomar.bibliomarserver.model.user.UserDetailsImpl;
-import bibliomar.bibliomarserver.model.user.UserLoginForm;
+import bibliomar.bibliomarserver.model.user.forms.UserLoginForm;
+import bibliomar.bibliomarserver.model.user.forms.UserRecoverForm;
+import bibliomar.bibliomarserver.service.mail.MailService;
 import bibliomar.bibliomarserver.utils.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import bibliomar.bibliomarserver.model.user.User;
-import bibliomar.bibliomarserver.model.user.UserRegisterForm;
+import bibliomar.bibliomarserver.model.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.repository.user.UserRepository;
 
 @Service
@@ -28,6 +30,8 @@ public class UserService {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    private MailService mailService;
 
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
@@ -52,7 +56,7 @@ public class UserService {
     }
 
     @Async
-    public void registerUser(UserRegisterForm registerForm) {
+    public CompletableFuture<Void> registerUser(UserRegisterForm registerForm) {
         this.checkExistingUser(registerForm);
 
         try {
@@ -67,6 +71,7 @@ public class UserService {
             newUserLibrary.setUsername(newUser.getUsername());
             newUser.setUserLibrary(newUserLibrary);
             this.userRepository.save(newUser);
+            return CompletableFuture.completedFuture(null);
 
         } catch (Exception e) {
             // TODO: Better handle exceptions
@@ -90,7 +95,28 @@ public class UserService {
     }
 
     @Async
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public CompletableFuture<Void> sendRecoveryEmail(UserRecoverForm recoverForm) {
+        User possibleExistingUser = userRepository.findByEmail(recoverForm.getEmail());
+        if (possibleExistingUser == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
+        }
+
+        String jwtPasswordlessToken = jwtTokenUtils.generatePasswordlessToken(possibleExistingUser.getUsername());
+
+        try {
+            this.mailService.sendRecoveryMail(possibleExistingUser, jwtPasswordlessToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error while sending recovery email.", e);
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+
+
+    @Async
+    public CompletableFuture<List<User>> getAllUsers() {
+        return CompletableFuture.completedFuture(userRepository.findAll());
     }
 }

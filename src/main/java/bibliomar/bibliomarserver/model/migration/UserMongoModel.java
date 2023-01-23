@@ -22,8 +22,8 @@ public class UserMongoModel {
     String username;
     String password;
     String email;
-    List<LinkedHashMap<Object, String>> reading;
+    List<LinkedHashMap<Object, Object>> reading;
     @Field("to-read")
-    List<LinkedHashMap<Object, String>> toRead;
-    List<LinkedHashMap<Object, String>> backlog;
+    List<LinkedHashMap<Object, Object>> toRead;
+    List<LinkedHashMap<Object, Object>> backlog;
 }

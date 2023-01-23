@@ -1,10 +1,15 @@
 package bibliomar.bibliomarserver.service.migration;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import bibliomar.bibliomarserver.model.library.UserLibraryEntry;
+import bibliomar.bibliomarserver.model.metadata.FictionMetadata;
+import bibliomar.bibliomarserver.model.metadata.Metadata;
+import bibliomar.bibliomarserver.model.metadata.ScitechMetadata;
+import bibliomar.bibliomarserver.repository.metadata.FictionMetadataRepository;
+import bibliomar.bibliomarserver.repository.metadata.ScitechMetadataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +31,39 @@ public class MigrationService {
     UserLibraryRepository userLibraryRepository;
 
     @Autowired
+    FictionMetadataRepository fictionMetadataRepository;
+
+    @Autowired
+    ScitechMetadataRepository scitechMetadataRepository;
+
+    @Autowired
     UserMongoRepository migrationRepository;
 
     @Autowired
     UserRepository userRepository;
 
-    private HashMap<String, Object> listAsHashMap(List<LinkedHashMap<Object, String>> list) {
-        HashMap<String, Object> categoryHashtable = new HashMap<>();
-        for (LinkedHashMap<Object, String> item : list) {
-            String md5 = item.get("md5");
-            categoryHashtable.put(md5, item);
+    private HashMap<String, UserLibraryEntry> listAsHashMap(List<LinkedHashMap<Object, Object>> list) {
+        HashMap<String, UserLibraryEntry> categoryHashtable = new HashMap<>();
+        for (LinkedHashMap<Object, Object> item : list) {
+            String md5 = (String) item.get("md5");
+            String topic = (String) item.get("topic");
+            if (topic == "fiction") {
+                FictionMetadata fictionMetadata = fictionMetadataRepository.findByMD5(md5);
+                if (fictionMetadata != null) {
+                    UserLibraryEntry entry = new UserLibraryEntry(fictionMetadata);
+                    categoryHashtable.put(md5, entry);
+                } else {
+                    System.out.println("No metadata found for MD5: " + md5);
+                }
+            } else {
+                ScitechMetadata scitechMetadata = scitechMetadataRepository.findByMD5(md5);
+                if (scitechMetadata != null) {
+                    UserLibraryEntry entry = new UserLibraryEntry(scitechMetadata);
+                    categoryHashtable.put(md5, entry);
+                } else {
+                    System.out.println("No metadata found for MD5: " + md5);
+                }
+            }
         }
         return categoryHashtable;
     }
@@ -54,9 +82,9 @@ public class MigrationService {
                 return;
             }
 
-            HashMap<String, Object> reading = this.listAsHashMap(user.getReading());
-            HashMap<String, Object> toRead = this.listAsHashMap(user.getToRead());
-            HashMap<String, Object> backlog = this.listAsHashMap(user.getBacklog());
+            HashMap<String, UserLibraryEntry> reading = this.listAsHashMap(user.getReading());
+            HashMap<String, UserLibraryEntry> toRead = this.listAsHashMap(user.getToRead());
+            HashMap<String, UserLibraryEntry> backlog = this.listAsHashMap(user.getBacklog());
             boolean preMigration = true;
 
             User newUser = new User(username, password, email, preMigration);

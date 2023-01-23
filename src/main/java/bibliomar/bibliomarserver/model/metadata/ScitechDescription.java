@@ -4,18 +4,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.*;
-import org.hibernate.Hibernate;
-
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "fiction_description")
+@Table(name = "description")
 @Getter
 @Setter
-public class FictionDescription {
+public class ScitechDescription {
     @Id
     @Column(name = "MD5", columnDefinition = "CHAR(32)")
     private String MD5;

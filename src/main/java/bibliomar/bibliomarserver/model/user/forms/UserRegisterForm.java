@@ -1,5 +1,6 @@
-package bibliomar.bibliomarserver.model.user;
+package bibliomar.bibliomarserver.model.user.forms;
 
+import bibliomar.bibliomarserver.model.user.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

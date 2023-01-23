@@ -1,0 +1,10 @@
+POST http://localhost:8080/library
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nVXNlciIsImlzcyI6ImJpYmxpb21hciIsImV4cCI6MTY3NDc0Nzc0N30.8eRugpG-8D6I4pN5KD44ZmY2nc9mUvKuGloHlzYFFbez3dfKT_E0wz2OaTFWkgUlvvKnuhVRfFeZZTw7MYsx9w
+
+{
+  "topic": "{{topic}}",
+  "targetCategory": "backlog",
+  "md5": "{{md5}}"
+}
+
