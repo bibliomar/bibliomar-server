@@ -28,6 +28,11 @@ public class UserController {
     @Autowired
     private UserLibraryRepository userLibraryRepository;
 
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getPublicUser(@PathVariable String username) throws ExecutionException, InterruptedException {
+        return ResponseEntity.ok(userService.getPublicUser(username).get());
+    }
+
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<JwtTokenResponse> login(@Valid @RequestBody UserLoginForm loginForm) throws ExecutionException, InterruptedException {
         JwtTokenResponse tokenResponse = userService.authUser(loginForm).get();
@@ -43,14 +48,6 @@ public class UserController {
     @PostMapping(path = "/recover", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void userRecover(@Valid @RequestBody UserRecoverForm recoverForm) throws ExecutionException, InterruptedException {
         this.userService.sendRecoveryEmail(recoverForm).get();
-    }
-
-
-    @GetMapping(path = "/all")
-    public ResponseEntity<List<User>> getAllUsers() throws ExecutionException, InterruptedException {
-        List<User> users = userService.getAllUsers().get();
-        List<UserLibrary> userLibraries = userLibraryRepository.findAll();
-        return ResponseEntity.ok(users);
     }
 
 

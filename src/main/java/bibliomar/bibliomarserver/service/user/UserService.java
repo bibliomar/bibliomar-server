@@ -82,6 +82,19 @@ public class UserService {
     }
 
     @Async
+    public CompletableFuture<User> getPublicUser(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
+        }
+        if (user.isPrivateProfile()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User has a private profile.");
+        }
+
+        return CompletableFuture.completedFuture(user);
+    }
+
+    @Async
     public CompletableFuture<JwtTokenResponse> authUser(UserLoginForm loginForm) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(),
                 loginForm.getPassword());
@@ -112,11 +125,5 @@ public class UserService {
         }
 
         return CompletableFuture.completedFuture(null);
-    }
-
-
-    @Async
-    public CompletableFuture<List<User>> getAllUsers() {
-        return CompletableFuture.completedFuture(userRepository.findAll());
     }
 }

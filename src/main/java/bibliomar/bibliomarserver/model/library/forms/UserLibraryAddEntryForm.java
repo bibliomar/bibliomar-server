@@ -1,6 +1,6 @@
 package bibliomar.bibliomarserver.model.library.forms;
 
-import bibliomar.bibliomarserver.utils.Topics;
+import bibliomar.bibliomarserver.utils.contants.Topics;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

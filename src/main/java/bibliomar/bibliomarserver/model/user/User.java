@@ -2,6 +2,7 @@ package bibliomar.bibliomarserver.model.user;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -35,6 +36,7 @@ public class User {
     // Do *not* use FetchType.LAZY if you want to return this model as JSON.
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
+    @JsonIgnoreProperties("username")
     private UserLibrary userLibrary;
 
     @NotNull
@@ -47,6 +49,8 @@ public class User {
     @NotNull
     @JsonProperty("role")
     private UserRole role = UserRole.ROLE_USER;
+
+    private boolean privateProfile = false;
 
     public User(String username, String password, String email) {
         this.username = username;

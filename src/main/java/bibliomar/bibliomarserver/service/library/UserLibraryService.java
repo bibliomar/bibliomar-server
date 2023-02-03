@@ -3,22 +3,22 @@ package bibliomar.bibliomarserver.service.library;
 import bibliomar.bibliomarserver.model.library.UserLibrary;
 import bibliomar.bibliomarserver.model.library.UserLibraryEntry;
 import bibliomar.bibliomarserver.model.library.forms.UserLibraryAddEntryForm;
-import bibliomar.bibliomarserver.model.library.forms.UserLibraryRemoveEntryForm;
 import bibliomar.bibliomarserver.model.metadata.FictionMetadata;
 import bibliomar.bibliomarserver.model.metadata.Metadata;
 import bibliomar.bibliomarserver.model.metadata.ScitechMetadata;
 import bibliomar.bibliomarserver.repository.library.UserLibraryRepository;
 import bibliomar.bibliomarserver.repository.metadata.FictionMetadataRepository;
 import bibliomar.bibliomarserver.repository.metadata.ScitechMetadataRepository;
-import bibliomar.bibliomarserver.utils.Topics;
+import bibliomar.bibliomarserver.utils.MD5;
+import bibliomar.bibliomarserver.utils.contants.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Service
 public class UserLibraryService {
@@ -27,7 +27,9 @@ public class UserLibraryService {
     private final ScitechMetadataRepository scitechMetadataRepository;
 
     @Autowired
-    public UserLibraryService(UserLibraryRepository userLibraryRepository, FictionMetadataRepository fictionMetadataRepository, ScitechMetadataRepository scitechMetadataRepository) {
+    public UserLibraryService(UserLibraryRepository userLibraryRepository,
+                              FictionMetadataRepository fictionMetadataRepository,
+                              ScitechMetadataRepository scitechMetadataRepository) {
         this.userLibraryRepository = userLibraryRepository;
         this.fictionMetadataRepository = fictionMetadataRepository;
         this.scitechMetadataRepository = scitechMetadataRepository;
@@ -41,17 +43,16 @@ public class UserLibraryService {
     }
 
     @Async
-    public CompletableFuture<Void> removeEntry(String username, UserLibraryRemoveEntryForm removeEntryForm) {
+    public CompletableFuture<Void> removeEntry(String username, MD5 md5) {
         UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
-        String MD5 = removeEntryForm.getMD5();
 
-        UserLibraryEntry possibleExistingEntry = userLibrary.getEntry(MD5);
+        UserLibraryEntry possibleExistingEntry = userLibrary.getEntry(md5.getMD5());
         if (possibleExistingEntry == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No entry found with given MD5 in user library.");
         }
 
         try {
-            userLibrary.removeFromCategory(possibleExistingEntry.getCategory(), possibleExistingEntry.getMD5());
+            userLibrary.removeEntry(possibleExistingEntry);
             this.userLibraryRepository.save(userLibrary);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -64,19 +65,15 @@ public class UserLibraryService {
     private void appendToLibrary(UserLibrary userLibrary, Metadata metadata, String targetCategory) {
         try {
             UserLibraryEntry newEntry = new UserLibraryEntry(metadata);
-            userLibrary.addToCategory(targetCategory, newEntry);
+            newEntry.setCategory(targetCategory);
+            userLibrary.appendEntry(newEntry);
             this.userLibraryRepository.save(userLibrary);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while adding entry to user library.");
         }
-    }
-
-    private void moveExistingEntry(UserLibrary userLibrary, UserLibraryEntry entry, String targetCategory) {
-        userLibrary.removeFromCategory(entry.getCategory(), entry.getMD5());
-        userLibrary.addToCategory(targetCategory, entry);
-        this.userLibraryRepository.save(userLibrary);
     }
 
     @Async
@@ -88,7 +85,15 @@ public class UserLibraryService {
 
         UserLibraryEntry possibleExistingEntry = userLibrary.getEntry(MD5);
         if (possibleExistingEntry != null) {
-            this.moveExistingEntry(userLibrary, possibleExistingEntry, targetCategory);
+            try {
+                userLibrary.moveEntry(possibleExistingEntry, targetCategory);
+                this.userLibraryRepository.save(userLibrary);
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while moving entry in user library.");
+            }
+
             return CompletableFuture.completedFuture(null);
         }
 
@@ -115,22 +120,16 @@ public class UserLibraryService {
     }
 
     @Async
-    public CompletableFuture<List<UserLibrary>> getAllUserLibraries() {
-        List<UserLibrary> userLibraries = this.userLibraryRepository.findAll();
-        return CompletableFuture.completedFuture(userLibraries);
-    }
-
-    @Async
     public CompletableFuture<UserLibrary> getUserLibrary(String username) {
         UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
         return CompletableFuture.completedFuture(userLibrary);
     }
 
     @Async
-    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(String username, String MD5) {
+    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(String username, MD5 md5) {
         this.retrieveExistingUserLibrary(username);
         UserLibrary userLibrary = userLibraryRepository.findByUsername(username);
-        UserLibraryEntry possibleBook = userLibrary.getEntry(MD5);
+        UserLibraryEntry possibleBook = userLibrary.getEntry(md5.getMD5());
         if (possibleBook == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No book found with given MD5.");
         }

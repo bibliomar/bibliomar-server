@@ -55,7 +55,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !baseUser.isPreMigration();
     }
 
     @Override

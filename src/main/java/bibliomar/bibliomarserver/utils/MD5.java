@@ -1,16 +1,18 @@
-package bibliomar.bibliomarserver.model.library.forms;
+package bibliomar.bibliomarserver.utils;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-public class UserLibraryRemoveEntryForm {
+@Data
+public class MD5 {
     @NotNull
     @NotEmpty
     @Pattern(regexp = "^[a-fA-F0-9]{32}$", message = "MD5 must be a 32 character hexadecimal string")
-    private String md5;
+    private String MD5;
+
+    public MD5(String MD5) {
+        this.MD5 = MD5;
+    }
 }

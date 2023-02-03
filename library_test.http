@@ -1,10 +1,29 @@
+### Add entry to library
 POST http://localhost:8080/library
 Content-Type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nVXNlciIsImlzcyI6ImJpYmxpb21hciIsImV4cCI6MTY3NDc0Nzc0N30.8eRugpG-8D6I4pN5KD44ZmY2nc9mUvKuGloHlzYFFbez3dfKT_E0wz2OaTFWkgUlvvKnuhVRfFeZZTw7MYsx9w
 
 {
   "topic": "{{topic}}",
-  "targetCategory": "backlog",
+  "targetCategory": "reading",
   "md5": "{{md5}}"
 }
+
+### Get user library
+GET http://localhost:8080/library
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nVXNlciIsImlzcyI6ImJpYmxpb21hciIsImV4cCI6MTY3NDc0Nzc0N30.8eRugpG-8D6I4pN5KD44ZmY2nc9mUvKuGloHlzYFFbez3dfKT_E0wz2OaTFWkgUlvvKnuhVRfFeZZTw7MYsx9w
+
+### Get specific entry
+GET http://localhost:8080/library/{{md5}}
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nVXNlciIsImlzcyI6ImJpYmxpb21hciIsImV4cCI6MTY3NDc0Nzc0N30.8eRugpG-8D6I4pN5KD44ZmY2nc9mUvKuGloHlzYFFbez3dfKT_E0wz2OaTFWkgUlvvKnuhVRfFeZZTw7MYsx9w
+
+
+### Remove entry from library
+DELETE http://localhost:8080/library/{{md5}}
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJUZXN0aW5nVXNlciIsImlzcyI6ImJpYmxpb21hciIsImV4cCI6MTY3NDc0Nzc0N30.8eRugpG-8D6I4pN5KD44ZmY2nc9mUvKuGloHlzYFFbez3dfKT_E0wz2OaTFWkgUlvvKnuhVRfFeZZTw7MYsx9w
+
+
 

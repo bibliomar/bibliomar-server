@@ -1,9 +1,15 @@
 package bibliomar.bibliomarserver.model.metadata;
 
+import bibliomar.bibliomarserver.utils.MD5;
+import bibliomar.bibliomarserver.utils.contants.Topics;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +29,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Metadata {
+    // TODO: Implement coverUrl field pointing to libgen's cover images.
     @Id
     @Column(name = "ID")
     protected long id;
@@ -36,32 +44,43 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
-    private LocalDateTime timeAdded;
+    protected LocalDateTime timeAdded;
     @Column(name = "TimeLastModified")
-    private LocalDateTime timeLastModified;
+    protected LocalDateTime timeLastModified;
 
     @Column(name = "Extension")
-    private String extension;
+    protected String extension;
     @Column(name = "Filesize")
-    private int fileSize;
+    protected int fileSize;
 
     @Column(name = "Pages")
-    private String pages;
+    protected String pages;
 
     @Column(name = "Coverurl")
-    private String coverURL;
+    @JsonIgnore
+    protected String coverReference;
 
     @Column(name = "Series")
-    private String series;
+    protected String series;
     @Column(name = "Edition")
-    private String edition;
+    protected String edition;
     @Column(name = "Language")
-    private String language;
+    protected String language;
     @Column(name = "Year")
-    private String year;
+    protected String year;
     @Column(name = "Publisher")
-    private String publisher;
+    protected String publisher;
 
+    @Transient
+    protected Topics topic;
+
+    @Transient
+    @JsonProperty("coverURL")
+    protected String coverURL;
+
+    @Transient
+    @JsonProperty("downloadMirrors")
+    protected MetadataDownloadMirrors downloadMirrors;
 
     /*
      * There's a few values that should be mandatory for a given Metadata, namely:
@@ -98,7 +117,7 @@ public class Metadata {
         this.setTitle(baseMetadata.getTitle());
         this.setAuthor(baseMetadata.getAuthor());
         this.setMD5(baseMetadata.getMD5());
-        this.setCoverURL(baseMetadata.getCoverURL());
+        this.setCoverReference(baseMetadata.getCoverReference());
         this.setEdition(baseMetadata.getEdition());
         this.setExtension(baseMetadata.getExtension());
         this.setFileSize(baseMetadata.getFileSize());
@@ -109,6 +128,52 @@ public class Metadata {
         this.setTimeAdded(baseMetadata.getTimeAdded());
         this.setTimeLastModified(baseMetadata.getTimeLastModified());
         this.setYear(baseMetadata.getYear());
+        this.setTopic(baseMetadata.getTopic());
+    }
+
+    public String getMD5() {
+        return this.MD5;
+    }
+
+    @JsonIgnore
+    public MD5 getMD5AsType() {
+        return new MD5(this.MD5);
+    }
+
+    @JsonGetter("coverURL")
+    public String getCoverURL() {
+        this.buildCoverUrl();
+        return this.coverURL;
+    }
+
+    @JsonGetter("downloadMirrors")
+    public MetadataDownloadMirrors getDownloadMirrors() {
+        this.buildMetadataDownloadMirrors();
+        return this.downloadMirrors;
+    }
+
+    public void buildCoverUrl() {
+        if (coverURL != null && !coverURL.isBlank()) {
+            return;
+        }
+        String libgenBaseUrl = "https://libgen.is";
+        if (this.coverReference == null || this.coverReference.isBlank()) {
+            this.coverURL = null;
+            return;
+        }
+
+        if (topic == Topics.fiction) {
+            this.coverURL = libgenBaseUrl + "/fictioncovers/" + this.coverReference;
+        } else {
+            this.coverURL = libgenBaseUrl + "/covers/" + this.coverReference;
+        }
+    }
+
+    public void buildMetadataDownloadMirrors() {
+        if (this.downloadMirrors != null) {
+            return;
+        }
+        this.downloadMirrors = new MetadataDownloadMirrors(this.MD5, this.topic);
     }
 
 }

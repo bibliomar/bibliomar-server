@@ -14,7 +14,7 @@ import lombok.Setter;
 public class ScitechDescription {
     @Id
     @Column(name = "MD5", columnDefinition = "CHAR(32)")
-    private String MD5;
+    private String md5;
     @Column(name = "Descr")
     private String description;
 }

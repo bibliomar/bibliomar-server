@@ -5,6 +5,7 @@ import bibliomar.bibliomarserver.model.user.UserDetailsImpl;
 import bibliomar.bibliomarserver.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,4 +32,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         return userDetails;
     }
+
+    /**
+     * Only call this method if you are sure the security context is not empty.
+     *
+     * @return UserDetails of the authenticated user
+     */
+    public static UserDetails getAuthenticatedUser() {
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
 }

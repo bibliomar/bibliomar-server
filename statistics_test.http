@@ -1,0 +1,8 @@
+### Top
+GET http://localhost:8080/statistics/top
+Accept: application/json
+
+### Increment view
+POST http://localhost:8080/statistics/{{topic}}/{{md5}}/views
+Accept: application/json
+

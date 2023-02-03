@@ -3,9 +3,8 @@ package bibliomar.bibliomarserver.model.library;
 import java.util.HashMap;
 import java.util.Map;
 
-import bibliomar.bibliomarserver.model.metadata.Metadata;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import org.hibernate.annotations.Type;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -42,7 +41,9 @@ public class UserLibrary {
     @Type(JsonType.class)
     private HashMap<String, UserLibraryEntry> dropped = new HashMap<>();
 
-    public void removeFromCategory(String category, String MD5) {
+    public void removeEntry(UserLibraryEntry entryToRemove) {
+        String MD5 = entryToRemove.getMD5();
+        String category = entryToRemove.getCategory();
         switch (category) {
             case "reading" -> reading.remove(MD5);
             case "toRead" -> toRead.remove(MD5);
@@ -57,27 +58,49 @@ public class UserLibrary {
     /**
      * Adds an entry to a category.
      * Always prefer this method over a custom implementation.
+     * <p>
+     * The target category is determined by the entry's category field.
      *
-     * @param category         The category in which to add the book.
-     * @param userLibraryEntry The entry to add.
+     * @param entryToAdd The entry to add.
      */
-    public void addToCategory(String category, @Valid UserLibraryEntry userLibraryEntry) {
-        String metadataMD5 = userLibraryEntry.getMD5();
+    public void appendEntry(UserLibraryEntry entryToAdd) {
+        String metadataMD5 = entryToAdd.getMD5();
+        String category = entryToAdd.getCategory();
+
+        if (entryToAdd.getCategory() == null || entryToAdd.getCategory().isBlank()) {
+            throw new IllegalArgumentException("Entry category must not be null or blank.");
+        }
+
         UserLibraryEntry possibleExistingEntry = getEntry(metadataMD5);
         if (possibleExistingEntry != null) {
             throw new IllegalArgumentException("A entry with the same MD5 is already in the user's library.");
         }
 
         switch (category) {
-            case "reading" -> reading.put(metadataMD5, userLibraryEntry);
-            case "toRead" -> toRead.put(metadataMD5, userLibraryEntry);
-            case "finished" -> finished.put(metadataMD5, userLibraryEntry);
-            case "backlog" -> backlog.put(metadataMD5, userLibraryEntry);
-            case "dropped" -> dropped.put(metadataMD5, userLibraryEntry);
+            case "reading" -> reading.put(metadataMD5, entryToAdd);
+            case "toRead" -> toRead.put(metadataMD5, entryToAdd);
+            case "finished" -> finished.put(metadataMD5, entryToAdd);
+            case "backlog" -> backlog.put(metadataMD5, entryToAdd);
+            case "dropped" -> dropped.put(metadataMD5, entryToAdd);
             default ->
                     throw new IllegalArgumentException("Category must be one of the following: reading, toRead, finished, backlog, dropped.");
         }
 
+    }
+
+    public void moveEntry(UserLibraryEntry entryToMove, String targetCategory) {
+        if (entryToMove.getCategory() == null || entryToMove.getCategory().isBlank()) {
+            throw new IllegalArgumentException("Entry category must not be null or blank.");
+        }
+        if (targetCategory == null || targetCategory.isBlank()) {
+            throw new IllegalArgumentException("Target category must not be null or blank.");
+        }
+        if (entryToMove.getCategory().equals(targetCategory)) {
+            throw new IllegalArgumentException("Entry is already in the target category.");
+        }
+        removeEntry(entryToMove);
+        entryToMove.setCategory(targetCategory);
+        appendEntry(entryToMove);
     }
 
 
@@ -89,6 +112,7 @@ public class UserLibrary {
      *
      * @return A HashMap containing all categories.
      */
+    @JsonIgnore
     public HashMap<String, HashMap<String, UserLibraryEntry>> getAllCategories() {
         HashMap<String, HashMap<String, UserLibraryEntry>> allCategories = new HashMap<>();
         allCategories.put("reading", reading);
