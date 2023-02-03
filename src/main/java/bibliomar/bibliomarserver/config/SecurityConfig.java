@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/user/{username}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/recover").permitAll()
                 .requestMatchers("/metadata/**").permitAll()
+                .requestMatchers("/search/**").permitAll()
                 .requestMatchers("/statistics/**").permitAll()
                 .requestMatchers("/migration/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
