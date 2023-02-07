@@ -98,11 +98,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.manticoresearch</groupId>
-            <artifactId>manticoresearch</artifactId>
-            <version>3.2.0</version>
-        </dependency>
+        
     </dependencies>
 
     <build>

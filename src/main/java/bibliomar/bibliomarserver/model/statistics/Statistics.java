@@ -31,12 +31,14 @@ public class Statistics {
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(insertable = false, updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private FictionMetadata fictionMetadataReference;
 
     @OneToOne
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(insertable = false, updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ScitechMetadata scitechMetadataReference;
 
     @Transient
