@@ -21,16 +21,26 @@ public class StatisticsController {
         this.statisticsService = statisticsService;
     }
 
-    @GetMapping("/top")
-    public List<Statistics> getTop(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+    @GetMapping("/top/views")
+    public List<Statistics> getTopByViews(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
         List<Statistics> top = statisticsService.getTopByViews(limit).get();
         return top;
     }
 
+    @GetMapping("/top/downloads")
+    public List<Statistics> getTopByDownloads(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+        List<Statistics> top = statisticsService.getTopByDownloads(limit).get();
+        return top;
+    }
 
     @PostMapping("/{topic}/{MD5}/views")
     public void incrementViews(MD5 MD5, @PathVariable Topics topic) throws ExecutionException, InterruptedException {
         statisticsService.incrementViews(MD5.getMD5(), topic).get();
+    }
+
+    @PostMapping("/{topic}/{MD5}/downloads")
+    public void incrementDownloads(MD5 MD5, @PathVariable Topics topic) throws ExecutionException, InterruptedException {
+        statisticsService.incrementDownloads(MD5.getMD5(), topic).get();
     }
 
 

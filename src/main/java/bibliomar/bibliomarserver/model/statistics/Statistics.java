@@ -5,6 +5,7 @@ import bibliomar.bibliomarserver.model.metadata.Metadata;
 import bibliomar.bibliomarserver.model.metadata.ScitechMetadata;
 import bibliomar.bibliomarserver.utils.contants.Topics;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,18 +28,15 @@ public class Statistics {
     @Column(name = "views", columnDefinition = "BIGINT DEFAULT 0", nullable = false)
     private Long numOfViews = 0L;
 
+    @Column(name = "downloads", columnDefinition = "BIGINT DEFAULT 0", nullable = false)
+    private Long numOfDownloads = 0L;
+
     @OneToOne
     @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(insertable = false, updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private FictionMetadata fictionMetadataReference;
 
     @OneToOne
     @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(insertable = false, updatable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ScitechMetadata scitechMetadataReference;
 
     @Transient
@@ -48,6 +46,10 @@ public class Statistics {
 
     public void incrementViews() {
         this.numOfViews += 1;
+    }
+
+    public void incrementDownloads() {
+        this.numOfDownloads += 1;
     }
 
 
@@ -77,6 +79,16 @@ public class Statistics {
     public Metadata getMetadata() {
         this.buildMetadata();
         return this.metadata;
+    }
+
+    @JsonIgnore
+    public FictionMetadata getFictionMetadataReference() {
+        return fictionMetadataReference;
+    }
+
+    @JsonIgnore
+    public ScitechMetadata getScitechMetadataReference() {
+        return scitechMetadataReference;
     }
 
 

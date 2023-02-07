@@ -1,8 +1,16 @@
-### Top
-GET http://localhost:8080/statistics/top
+### Top views
+GET http://localhost:8080/statistics/top/views
+Accept: application/json
+
+### Top downloads
+GET http://localhost:8080/statistics/top/downloads
 Accept: application/json
 
 ### Increment view
 POST http://localhost:8080/statistics/{{topic}}/{{md5}}/views
+Accept: application/json
+
+### Increment downloads
+POST http://localhost:8080/statistics/{{topic}}/{{md5}}/downloads
 Accept: application/json
 

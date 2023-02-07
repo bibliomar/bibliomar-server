@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,11 @@ public class StatisticsService {
         } else {
             metadata = metadataService.getScitechMetadata(MD5).get();
         }
+
+        if (metadata == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Metadata not found");
+        }
+
         return CompletableFuture.completedFuture(metadata);
     }
 
@@ -57,6 +64,21 @@ public class StatisticsService {
     }
 
     @Async
+    public CompletableFuture<Void> incrementDownloads(String MD5, Topics topic) throws ExecutionException, InterruptedException {
+        Statistics statistics = statisticsRepository.findByMD5AndTopic(MD5, topic);
+        if (statistics == null) {
+            Metadata metadata = this.getMetadata(MD5, topic).get();
+            Statistics newStatistics = Statistics.build(metadata);
+            newStatistics.incrementDownloads();
+            statisticsRepository.save(newStatistics);
+        } else {
+            statistics.incrementDownloads();
+            statisticsRepository.save(statistics);
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Async
     public CompletableFuture<List<Statistics>> getTopByViews(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDesc(pageRequest);
@@ -65,9 +87,9 @@ public class StatisticsService {
     }
 
     @Async
-    public CompletableFuture<List<Statistics>> getTopByViews(Topics topic, int limit) {
+    public CompletableFuture<List<Statistics>> getTopByDownloads(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
-        Slice<Statistics> statisticsSlice = statisticsRepository.findAllByTopicOrderByNumOfViewsDesc(topic, pageRequest);
+        Slice<Statistics> statisticsSlice = statisticsRepository.findAllByOrderByNumOfDownloadsDesc(pageRequest);
         List<Statistics> statisticsList = statisticsSlice.getContent();
         return CompletableFuture.completedFuture(statisticsList);
     }
