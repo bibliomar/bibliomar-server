@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Metadata {
-    // TODO: Implement coverUrl field pointing to libgen's cover images.
     @Id
     @Column(name = "ID")
     protected long id;
@@ -57,8 +56,7 @@ public class Metadata {
     protected String pages;
 
     @Column(name = "Coverurl")
-    @JsonIgnore
-    protected String coverReference;
+    protected String coverUrl;
 
     @Column(name = "Series")
     protected String series;
@@ -75,30 +73,13 @@ public class Metadata {
     protected Topics topic;
 
     @Transient
-    @JsonProperty("coverURL")
-    protected String coverURL;
-
-    @Transient
     @JsonProperty("downloadMirrors")
     protected MetadataDownloadMirrors downloadMirrors;
 
-    /*
-     * There's a few values that should be mandatory for a given Metadata, namely:
-     * - MD5
-     * - Title
-     * - Author
-     * It doesn't matter which value is missing, a metadata is deemed invalid if any of those is.
-     */
     @JsonIgnore
     public boolean isMetadataInvalid() {
 
         if (this.MD5 == null || this.MD5.isBlank()) {
-            return true;
-        }
-        if (this.title == null || this.title.isBlank()) {
-            return true;
-        }
-        if (this.author == null || this.author.isBlank()) {
             return true;
         }
 
@@ -117,7 +98,7 @@ public class Metadata {
         this.setTitle(baseMetadata.getTitle());
         this.setAuthor(baseMetadata.getAuthor());
         this.setMD5(baseMetadata.getMD5());
-        this.setCoverReference(baseMetadata.getCoverReference());
+        this.setCoverUrl(baseMetadata.getCoverUrl());
         this.setEdition(baseMetadata.getEdition());
         this.setExtension(baseMetadata.getExtension());
         this.setFileSize(baseMetadata.getFileSize());
@@ -140,33 +121,10 @@ public class Metadata {
         return new MD5(this.MD5);
     }
 
-    @JsonGetter("coverURL")
-    public String getCoverURL() {
-        this.buildCoverUrl();
-        return this.coverURL;
-    }
-
     @JsonGetter("downloadMirrors")
     public MetadataDownloadMirrors getDownloadMirrors() {
         this.buildMetadataDownloadMirrors();
         return this.downloadMirrors;
-    }
-
-    public void buildCoverUrl() {
-        if (coverURL != null && !coverURL.isBlank()) {
-            return;
-        }
-        String libgenBaseUrl = "https://libgen.is";
-        if (this.coverReference == null || this.coverReference.isBlank()) {
-            this.coverURL = null;
-            return;
-        }
-
-        if (topic == Topics.fiction) {
-            this.coverURL = libgenBaseUrl + "/fictioncovers/" + this.coverReference;
-        } else {
-            this.coverURL = libgenBaseUrl + "/covers/" + this.coverReference;
-        }
     }
 
     public void buildMetadataDownloadMirrors() {
