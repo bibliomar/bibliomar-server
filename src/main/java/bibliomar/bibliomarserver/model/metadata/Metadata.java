@@ -47,7 +47,7 @@ public class Metadata {
 
     @Column(name = "TimeLastModified")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    
+
     protected LocalDateTime timeLastModified;
 
     @Column(name = "Extension")

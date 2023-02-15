@@ -1,6 +1,7 @@
 package bibliomar.bibliomarserver.model.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -20,6 +21,7 @@ public class JwtTokenResponse {
     private String accessToken;
 
     @JsonProperty("expires_at")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
     private Instant expiresAt;
 
     public static JwtTokenResponse build(DecodedJWT decodedJWT){
