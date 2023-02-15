@@ -14,6 +14,9 @@ import org.hibernate.annotations.NotFoundAction;
 @Table(name = "updated")
 public class ScitechMetadata extends Metadata {
 
+    @Column(name = "VolumeInfo", columnDefinition = "VARCHAR(100)")
+    private String volumeInfo;
+
     @ManyToOne
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "MD5", referencedColumnName = "MD5", insertable = false, updatable = false,

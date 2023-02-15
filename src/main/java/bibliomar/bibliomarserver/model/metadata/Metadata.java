@@ -69,6 +69,12 @@ public class Metadata {
     @Column(name = "Publisher")
     protected String publisher;
 
+    @Column(name = "ASIN", columnDefinition = "CHAR(10)")
+    protected String ASIN;
+
+    @Column(name = "GooglebookID", columnDefinition = "CHAR(45)")
+    protected String googleBooksId;
+
     @Transient
     protected Topics topic;
 
