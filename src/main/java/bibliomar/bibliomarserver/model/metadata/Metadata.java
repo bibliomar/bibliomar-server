@@ -16,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -46,9 +47,9 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
-    protected Instant timeAdded;
+    protected LocalDateTime timeAdded;
     @Column(name = "TimeLastModified")
-    protected Instant timeLastModified;
+    protected LocalDateTime timeLastModified;
 
     @Column(name = "Extension")
     protected String extension;
@@ -85,7 +86,7 @@ public class Metadata {
     @JsonProperty("downloadMirrors")
     protected MetadataDownloadMirrors downloadMirrors;
 
-    
+
 
     @JsonIgnore
     public boolean isMetadataInvalid() {
