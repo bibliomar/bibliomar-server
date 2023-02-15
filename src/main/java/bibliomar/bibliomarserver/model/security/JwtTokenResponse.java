@@ -21,7 +21,7 @@ public class JwtTokenResponse {
     private String accessToken;
 
     @JsonProperty("expires_at")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant expiresAt;
 
     public static JwtTokenResponse build(DecodedJWT decodedJWT){
