@@ -85,8 +85,7 @@ public class Metadata {
     @JsonProperty("downloadMirrors")
     protected MetadataDownloadMirrors downloadMirrors;
 
-    @Transient
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern();
+    
 
     @JsonIgnore
     public boolean isMetadataInvalid() {
@@ -133,7 +132,7 @@ public class Metadata {
         return new MD5(this.MD5);
     }
 
-    
+
 
     @JsonGetter("downloadMirrors")
     public MetadataDownloadMirrors getDownloadMirrors() {
