@@ -43,12 +43,12 @@ public class Metadata {
 
     @Column(name = "TimeAdded")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    protected LocalDateTime timeAdded;
+    protected Instant timeAdded;
 
     @Column(name = "TimeLastModified")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
 
-    protected LocalDateTime timeLastModified;
+    protected Instant timeLastModified;
 
     @Column(name = "Extension")
     protected String extension;
