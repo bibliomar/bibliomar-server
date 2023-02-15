@@ -135,12 +135,12 @@ public class Metadata {
     }
 
     @JsonGetter("timeAdded")
-    public String getTimeAdded() {
+    public String getTimeAddedString() {
         return this.timeAdded.format(this.FORMATTER);
     }
     
     @JsonGetter("timeLastModified")
-    public String getTimeLastModified() {
+    public String getTimeLastModifiedString() {
         return this.timeLastModified.format(this.FORMATTER);
     }
 
