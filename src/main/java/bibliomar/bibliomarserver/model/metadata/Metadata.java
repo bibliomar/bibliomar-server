@@ -12,8 +12,10 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * This class is the base class for all metadata.
@@ -82,6 +84,9 @@ public class Metadata {
     @JsonProperty("downloadMirrors")
     protected MetadataDownloadMirrors downloadMirrors;
 
+    @Transient
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateTimeFormat.ISO.DATE_TIME.toString());
+
     @JsonIgnore
     public boolean isMetadataInvalid() {
 
@@ -125,6 +130,16 @@ public class Metadata {
     @JsonIgnore
     public MD5 getMD5AsType() {
         return new MD5(this.MD5);
+    }
+
+    @JsonGetter("timeAdded")
+    public String getTimeAddedString(){
+        return this.timeAdded.format(this.formatter);
+    }
+
+    @JsonGetter("timeModified")
+    public String getTimeLastModifiedString(){
+        return this.timeLastModified.format(this.formatter);
     }
 
     @JsonGetter("downloadMirrors")
