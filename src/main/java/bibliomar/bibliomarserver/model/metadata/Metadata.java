@@ -45,10 +45,10 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
-    protected ZonedDateTime timeAdded;
+    protected LocalDateTime timeAdded;
 
     @Column(name = "TimeLastModified")
-    protected ZonedDateTime timeLastModified;
+    protected LocalDateTime timeLastModified;
 
     @Column(name = "Extension")
     protected String extension;
