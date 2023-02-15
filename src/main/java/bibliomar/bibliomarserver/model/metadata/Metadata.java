@@ -42,9 +42,12 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     protected LocalDateTime timeAdded;
 
     @Column(name = "TimeLastModified")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    
     protected LocalDateTime timeLastModified;
 
     @Column(name = "Extension")
@@ -77,11 +80,6 @@ public class Metadata {
 
     @Transient
     protected Topics topic;
-
-    @Transient
-    DateTimeFormatter FORMATTER = DateTimeFormatter
-            .ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX")
-            .withZone(ZoneOffset.UTC);
 
     @Transient
     @JsonProperty("downloadMirrors")
@@ -134,15 +132,7 @@ public class Metadata {
         return new MD5(this.MD5);
     }
 
-    @JsonGetter("timeAdded")
-    public String getTimeAddedString() {
-        return this.timeAdded.format(this.FORMATTER);
-    }
-    
-    @JsonGetter("timeLastModified")
-    public String getTimeLastModifiedString() {
-        return this.timeLastModified.format(this.FORMATTER);
-    }
+
 
 
     @JsonGetter("downloadMirrors")
