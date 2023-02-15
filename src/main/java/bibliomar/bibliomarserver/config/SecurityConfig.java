@@ -62,12 +62,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors(AbstractHttpConfigurer::disable)
+        http.csrf().disable()
+                .cors()
+                .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.GET, "/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/user/{username}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/recover").permitAll()
                 .requestMatchers("/metadata/**").permitAll()
