@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -44,12 +45,10 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    protected LocalDateTime timeAdded;
-    
+    protected ZonedDateTime timeAdded;
+
     @Column(name = "TimeLastModified")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    protected LocalDateTime timeLastModified;
+    protected ZonedDateTime timeLastModified;
 
     @Column(name = "Extension")
     protected String extension;
