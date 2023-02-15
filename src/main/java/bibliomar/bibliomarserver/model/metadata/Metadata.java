@@ -11,10 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -82,6 +79,11 @@ public class Metadata {
     protected Topics topic;
 
     @Transient
+    DateTimeFormatter FORMATTER = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX")
+            .withZone(ZoneOffset.UTC);
+
+    @Transient
     @JsonProperty("downloadMirrors")
     protected MetadataDownloadMirrors downloadMirrors;
 
@@ -132,6 +134,15 @@ public class Metadata {
         return new MD5(this.MD5);
     }
 
+    @JsonGetter("timeAdded")
+    public String getTimeAdded() {
+        return this.timeAdded.format(this.FORMATTER);
+    }
+    
+    @JsonGetter("timeLastModified")
+    public String getTimeLastModified() {
+        return this.timeLastModified.format(this.FORMATTER);
+    }
 
 
     @JsonGetter("downloadMirrors")
