@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -45,9 +46,9 @@ public class Metadata {
     protected String author;
 
     @Column(name = "TimeAdded")
-    protected LocalDateTime timeAdded;
+    protected Instant timeAdded;
     @Column(name = "TimeLastModified")
-    protected LocalDateTime timeLastModified;
+    protected Instant timeLastModified;
 
     @Column(name = "Extension")
     protected String extension;
@@ -85,7 +86,7 @@ public class Metadata {
     protected MetadataDownloadMirrors downloadMirrors;
 
     @Transient
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateTimeFormat.ISO.DATE_TIME.toString());
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern();
 
     @JsonIgnore
     public boolean isMetadataInvalid() {
@@ -132,15 +133,7 @@ public class Metadata {
         return new MD5(this.MD5);
     }
 
-    @JsonGetter("timeAdded")
-    public String getTimeAddedString(){
-        return this.timeAdded.format(this.formatter);
-    }
-
-    @JsonGetter("timeModified")
-    public String getTimeLastModifiedString(){
-        return this.timeLastModified.format(this.formatter);
-    }
+    
 
     @JsonGetter("downloadMirrors")
     public MetadataDownloadMirrors getDownloadMirrors() {
