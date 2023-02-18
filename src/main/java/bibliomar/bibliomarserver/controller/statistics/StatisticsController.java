@@ -33,6 +33,12 @@ public class StatisticsController {
         return top;
     }
 
+    @GetMapping("/{topic}/{MD5}")
+    public Statistics getStatistics(MD5 MD5, @PathVariable Topics topic) throws ExecutionException, InterruptedException {
+        Statistics statistics = statisticsService.getStatistics(MD5.getMD5(), topic).get();
+        return statistics;
+    }
+
     @PostMapping("/{topic}/{MD5}/views")
     public void incrementViews(MD5 MD5, @PathVariable Topics topic) throws ExecutionException, InterruptedException {
         statisticsService.incrementViews(MD5.getMD5(), topic).get();

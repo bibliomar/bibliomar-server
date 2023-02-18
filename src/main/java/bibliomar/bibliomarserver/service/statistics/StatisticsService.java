@@ -82,10 +82,7 @@ public class StatisticsService {
     public CompletableFuture<Statistics> getStatistics(String MD5, Topics topic) throws ExecutionException, InterruptedException {
         Statistics statistics = statisticsRepository.findByMD5AndTopic(MD5, topic);
         if (statistics == null) {
-            Metadata metadata = this.getMetadata(MD5, topic).get();
-            Statistics newStatistics = Statistics.build(metadata);
-            statisticsRepository.save(newStatistics);
-            return CompletableFuture.completedFuture(newStatistics);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No statistics entry for the given metadata.");
         }
         return CompletableFuture.completedFuture(statistics);
     }
