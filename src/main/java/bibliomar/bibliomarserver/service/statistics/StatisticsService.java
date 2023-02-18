@@ -79,6 +79,18 @@ public class StatisticsService {
     }
 
     @Async
+    public CompletableFuture<Statistics> getStatistics(String MD5, Topics topic) throws ExecutionException, InterruptedException {
+        Statistics statistics = statisticsRepository.findByMD5AndTopic(MD5, topic);
+        if (statistics == null) {
+            Metadata metadata = this.getMetadata(MD5, topic).get();
+            Statistics newStatistics = Statistics.build(metadata);
+            statisticsRepository.save(newStatistics);
+            return CompletableFuture.completedFuture(newStatistics);
+        }
+        return CompletableFuture.completedFuture(statistics);
+    }
+
+    @Async
     public CompletableFuture<List<Statistics>> getTopByViews(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDesc(pageRequest);

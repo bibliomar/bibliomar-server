@@ -8,6 +8,7 @@ import bibliomar.bibliomarserver.model.security.JwtTokenResponse;
 import bibliomar.bibliomarserver.model.user.UserDetailsImpl;
 import bibliomar.bibliomarserver.model.user.forms.UserLoginForm;
 import bibliomar.bibliomarserver.model.user.forms.UserRecoverForm;
+import bibliomar.bibliomarserver.model.user.forms.UserUpdateForm;
 import bibliomar.bibliomarserver.service.mail.MailService;
 import bibliomar.bibliomarserver.utils.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -105,6 +108,37 @@ public class UserService {
         JwtTokenResponse jwtTokenResponse = JwtTokenResponse.build(jwtTokenUtils.verifyToken(jwtToken));
         return CompletableFuture.completedFuture(jwtTokenResponse);
 
+    }
+
+    @Async
+    public CompletableFuture<Void> updateUser(UserDetails user, UserUpdateForm updateForm){
+        User userToUpdate = userRepository.findByUsername(user.getUsername());
+        if (userToUpdate == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
+        }
+
+        if (updateForm.getNewPassword() != null) {
+            if (!updateForm.getNewPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!#%*?&]{6,16}$")){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be between 6 and 16 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.");
+            }
+            String hashedPassword = passwordEncoder.encode(updateForm.getNewPassword());
+            userToUpdate.setPassword(hashedPassword);
+        }
+
+        if (updateForm.getNewEmail() != null) {
+            userToUpdate.setEmail(updateForm.getNewEmail());
+        }
+
+        if (updateForm.getNewUsername() != null) {
+            userToUpdate.setUsername(updateForm.getNewUsername());
+        }
+
+        if (updateForm.isTogglePrivateProfile()){
+            userToUpdate.setPrivateProfile(!userToUpdate.isPrivateProfile());
+        }
+
+        userRepository.save(userToUpdate);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Async

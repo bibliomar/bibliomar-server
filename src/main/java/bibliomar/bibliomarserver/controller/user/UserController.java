@@ -6,10 +6,13 @@ import java.util.concurrent.ExecutionException;
 import bibliomar.bibliomarserver.model.security.JwtTokenResponse;
 import bibliomar.bibliomarserver.model.user.forms.UserLoginForm;
 import bibliomar.bibliomarserver.model.user.forms.UserRecoverForm;
+import bibliomar.bibliomarserver.model.user.forms.UserUpdateForm;
+import bibliomar.bibliomarserver.service.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import bibliomar.bibliomarserver.model.library.UserLibrary;
@@ -20,9 +23,13 @@ import bibliomar.bibliomarserver.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import javax.print.attribute.standard.Media;
+
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
+
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -31,6 +38,12 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<User> getPublicUser(@PathVariable String username) throws ExecutionException, InterruptedException {
         return ResponseEntity.ok(userService.getPublicUser(username).get());
+    }
+
+    @PostMapping(path = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateUser(@RequestBody UserUpdateForm updateForm) throws ExecutionException, InterruptedException {
+        UserDetails userDetails = UserDetailsServiceImpl.getAuthenticatedUser();
+        return ResponseEntity.ok(userService.updateUser(userDetails, updateForm).get());
     }
 
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
