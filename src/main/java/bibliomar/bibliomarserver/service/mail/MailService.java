@@ -23,7 +23,7 @@ public class MailService {
     }
 
     public String getRecoverUrl() {
-        return clientUrl + "/user/recover";
+        return "https://" + clientUrl + "/user/recover";
     }
 
     public void sendRecoveryMail(User recipient, String token) {
