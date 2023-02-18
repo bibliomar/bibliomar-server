@@ -117,6 +117,14 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
         }
 
+        if (updateForm.getNewUsername() != null) {
+            User possibleExistingUser = userRepository.findByUsername(updateForm.getNewUsername());
+            if (possibleExistingUser != null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already in use");
+            }
+            userToUpdate.setUsername(updateForm.getNewUsername());
+        }
+
         if (updateForm.getNewPassword() != null) {
             if (!updateForm.getNewPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!#%*?&]{6,16}$")){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password must be between 6 and 16 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character.");
@@ -126,12 +134,14 @@ public class UserService {
         }
 
         if (updateForm.getNewEmail() != null) {
+            User possibleExistingUser = userRepository.findByEmail(updateForm.getNewEmail());
+            if (possibleExistingUser != null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
+            }
             userToUpdate.setEmail(updateForm.getNewEmail());
         }
 
-        if (updateForm.getNewUsername() != null) {
-            userToUpdate.setUsername(updateForm.getNewUsername());
-        }
+
 
         if (updateForm.isTogglePrivateProfile()){
             userToUpdate.setPrivateProfile(!userToUpdate.isPrivateProfile());
