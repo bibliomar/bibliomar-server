@@ -1,12 +1,17 @@
 package bibliomar.bibliomarserver.service.mail;
 
 import bibliomar.bibliomarserver.model.user.User;
+import jakarta.mail.Address;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +31,7 @@ public class MailService {
         return "https://" + clientUrl + "/user/recover";
     }
 
-    public void sendRecoveryMail(User recipient, String token) {
+    public void sendRecoveryMail(User recipient, String token) throws MessagingException {
         String recoverTokenUrl = this.getRecoverUrl() + "?token=" + token;
         String recoverAnchor = String.format("<a href=\"%s\">RECOVER ACCOUNT</a>", recoverTokenUrl);
         String subject = "Bibliomar Account Recovery";
@@ -45,13 +50,15 @@ public class MailService {
     }
 
 
-    public void sendMail(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(this.getFrom());
-        message.setTo(to);
-        message.setText(body);
-        message.setSubject(subject);
+    public void sendMail(String to, String subject, String body) throws MessagingException {
+        MimeMessage helper = this.mailSender.createMimeMessage();
+        Address sendTo = new InternetAddress(to);
 
-        this.mailSender.send(message);
+        helper.setText(body, "UTF-8", "html");
+        helper.setFrom(this.getFrom());
+        helper.setSubject(subject);
+        helper.setRecipient(MimeMessage.RecipientType.TO, sendTo);
+
+        this.mailSender.send(helper);
     }
 }
