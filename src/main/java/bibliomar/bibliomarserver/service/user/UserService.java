@@ -105,7 +105,6 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
         } else if (possibleExistingUser.isPreMigration()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should ask for password reset");
-            
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(),
@@ -143,6 +142,9 @@ public class UserService {
             }
             String hashedPassword = passwordEncoder.encode(updateForm.getNewPassword());
             userToUpdate.setPassword(hashedPassword);
+            if (userToUpdate.isPreMigration()){
+                userToUpdate.setPreMigration(false);
+            }
         }
 
         if (updateForm.getNewEmail() != null) {
