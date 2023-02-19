@@ -42,26 +42,31 @@ public class MigrationService {
     @Autowired
     UserRepository userRepository;
 
-    private HashMap<String, UserLibraryEntry> listAsHashMap(List<LinkedHashMap<Object, Object>> list) {
+    private HashMap<String, UserLibraryEntry> listAsHashMap(List<LinkedHashMap<Object, Object>> mongoList) {
         HashMap<String, UserLibraryEntry> categoryHashtable = new HashMap<>();
-        for (LinkedHashMap<Object, Object> item : list) {
-            String md5 = (String) item.get("md5");
-            String topic = (String) item.get("topic");
-            if (topic == "fiction") {
-                FictionMetadata fictionMetadata = fictionMetadataRepository.findByMD5(md5);
+        for (LinkedHashMap<Object, Object> mongoItem : mongoList) {
+            String mongoMD5 = (String) mongoItem.get("md5");
+            String mongoTopic = (String) mongoItem.get("topic");
+            /**
+             * Important: Use the MD5 value stored in the
+             * respective metadatas to avoid inconsistency in users' libraries.
+             * e.g. Prefer to use metadata.getMD5() instead of the MD5 value stored in MongoDB library.
+             */
+            if (mongoTopic == "fiction") {
+                FictionMetadata fictionMetadata = fictionMetadataRepository.findByMD5(mongoMD5);
                 if (fictionMetadata != null) {
                     UserLibraryEntry entry = new UserLibraryEntry(fictionMetadata);
-                    categoryHashtable.put(md5, entry);
+                    categoryHashtable.put(fictionMetadata.getMD5(), entry);
                 } else {
-                    System.out.println("No metadata found for MD5: " + md5);
+                    System.out.println("No metadata found for MD5: " + mongoMD5);
                 }
             } else {
-                ScitechMetadata scitechMetadata = scitechMetadataRepository.findByMD5(md5);
+                ScitechMetadata scitechMetadata = scitechMetadataRepository.findByMD5(mongoMD5);
                 if (scitechMetadata != null) {
                     UserLibraryEntry entry = new UserLibraryEntry(scitechMetadata);
-                    categoryHashtable.put(md5, entry);
+                    categoryHashtable.put(scitechMetadata.getMD5(), entry);
                 } else {
-                    System.out.println("No metadata found for MD5: " + md5);
+                    System.out.println("No metadata found for MD5: " + mongoMD5);
                 }
             }
         }
