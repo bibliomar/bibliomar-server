@@ -37,14 +37,14 @@ public class MailService {
         String subject = "Bibliomar Account Recovery";
         // TODO: Update to an actual HTML document
         String body = "Hello " + recipient.getUsername() + ",\n\n" +
-                "You have requested to recover your account. Please click the link below to reset your password.\n\n" +
-                recoverAnchor + "\n\n" +
-                "Alternatively, if you can't click on the above link: \n" +
-                recoverTokenUrl + "\n\n" +
-                "PS: Do NOT share this email. \n" +
-                "It contains an URL that can be used to access your personal Bibliomar account. \n" +
-                "If you did not request to recover your password, please ignore this email.\n\n" +
-                "Best regards,\n" +
+                "You have requested to recover your account. Please click the link below to reset your password. <br><br>" +
+                recoverAnchor + "<br><br>" +
+                "Alternatively, if you can't click on the above link: <br>" +
+                recoverTokenUrl + "<br><br>" +
+                "PS: Do NOT share this email. <br>" +
+                "It contains an URL that can be used to access your personal Bibliomar account. <br>" +
+                "If you did not request to recover your password, please ignore this email. <br><br>" +
+                "Best regards, <br>" +
                 "Bibliomar Team";
         sendMail(recipient.getEmail(), subject, body);
     }

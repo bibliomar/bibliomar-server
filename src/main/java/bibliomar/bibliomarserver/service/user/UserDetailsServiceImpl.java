@@ -26,8 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = this.userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
-        } else if (user.isPreMigration()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should ask for password reset");
         }
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
         return userDetails;

@@ -104,6 +104,9 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (!userDetails.isCredentialsNonExpired()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should ask for password reset");
+        }
         String jwtToken = jwtTokenUtils.generateToken(userDetails.getUsername());
         JwtTokenResponse jwtTokenResponse = JwtTokenResponse.build(jwtTokenUtils.verifyToken(jwtToken));
         return CompletableFuture.completedFuture(jwtTokenResponse);
