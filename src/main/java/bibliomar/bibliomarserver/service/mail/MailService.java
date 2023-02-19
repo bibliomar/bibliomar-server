@@ -28,10 +28,13 @@ public class MailService {
 
     public void sendRecoveryMail(User recipient, String token) {
         String recoverTokenUrl = this.getRecoverUrl() + "?token=" + token;
+        String recoverAnchor = String.format("<a href=\"%s\">RECOVER ACCOUNT</a>", recoverTokenUrl);
         String subject = "Bibliomar Account Recovery";
         // TODO: Update to an actual HTML document
         String body = "Hello " + recipient.getUsername() + ",\n\n" +
                 "You have requested to recover your account. Please click the link below to reset your password.\n\n" +
+                recoverAnchor + "\n\n" +
+                "Alternatively, if you can't click on the above link: \n" +
                 recoverTokenUrl + "\n\n" +
                 "PS: Do NOT share this email. \n" +
                 "It contains an URL that can be used to access your personal Bibliomar account. \n" +
