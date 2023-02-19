@@ -99,6 +99,15 @@ public class UserService {
 
     @Async
     public CompletableFuture<JwtTokenResponse> authUser(UserLoginForm loginForm) {
+        
+        User possibleExistingUser = userRepository.findByUsername(loginForm.getUsername());
+        if (possibleExistingUser == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
+        } else if (possibleExistingUser.isPreMigration()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should ask for password reset");
+            
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(),
                 loginForm.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
