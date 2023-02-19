@@ -42,8 +42,10 @@ public class MigrationService {
     @Autowired
     UserRepository userRepository;
 
-    private HashMap<String, UserLibraryEntry> listAsHashMap(List<LinkedHashMap<Object, Object>> mongoList) {
-        HashMap<String, UserLibraryEntry> categoryHashtable = new HashMap<>();
+    private void appendListToLibrary(UserLibrary userLibrary,
+                                     String targetCategory,
+                                     List<LinkedHashMap<Object, Object>> mongoList) {
+
         for (LinkedHashMap<Object, Object> mongoItem : mongoList) {
             String mongoMD5 = (String) mongoItem.get("md5");
             String mongoTopic = (String) mongoItem.get("topic");
@@ -56,7 +58,8 @@ public class MigrationService {
                 FictionMetadata fictionMetadata = fictionMetadataRepository.findByMD5(mongoMD5);
                 if (fictionMetadata != null) {
                     UserLibraryEntry entry = new UserLibraryEntry(fictionMetadata);
-                    categoryHashtable.put(fictionMetadata.getMD5(), entry);
+                    entry.setCategory(targetCategory);
+                    userLibrary.appendEntry(entry);
                 } else {
                     System.out.println("No metadata found for MD5: " + mongoMD5);
                 }
@@ -64,13 +67,13 @@ public class MigrationService {
                 ScitechMetadata scitechMetadata = scitechMetadataRepository.findByMD5(mongoMD5);
                 if (scitechMetadata != null) {
                     UserLibraryEntry entry = new UserLibraryEntry(scitechMetadata);
-                    categoryHashtable.put(scitechMetadata.getMD5(), entry);
+                    entry.setCategory(targetCategory);
+                    userLibrary.appendEntry(entry);
                 } else {
                     System.out.println("No metadata found for MD5: " + mongoMD5);
                 }
             }
         }
-        return categoryHashtable;
     }
 
     public void migrate() {
@@ -87,17 +90,14 @@ public class MigrationService {
                 return;
             }
 
-            HashMap<String, UserLibraryEntry> reading = this.listAsHashMap(user.getReading());
-            HashMap<String, UserLibraryEntry> toRead = this.listAsHashMap(user.getToRead());
-            HashMap<String, UserLibraryEntry> backlog = this.listAsHashMap(user.getBacklog());
             boolean preMigration = true;
 
             User newUser = new User(username, password, email, preMigration);
             UserLibrary newLibrary = new UserLibrary();
             newLibrary.setUsername(username);
-            newLibrary.setReading(reading);
-            newLibrary.setToRead(toRead);
-            newLibrary.setBacklog(backlog);
+            this.appendListToLibrary(newLibrary, "reading", user.getReading());
+            this.appendListToLibrary(newLibrary, "toRead", user.getToRead());
+            this.appendListToLibrary(newLibrary, "backlog", user.getBacklog());
 
             newUser.setUserLibrary(newLibrary);
             userRepository.save(newUser);

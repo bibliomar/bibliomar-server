@@ -141,6 +141,9 @@ public class UserLibrary {
             HashMap<String, UserLibraryEntry> currentCategoryMap = category.getValue();
             if (currentCategoryMap.containsKey(MD5)) {
                 UserLibraryEntry entry = currentCategoryMap.get(MD5);
+                if (entry.getCategory() == null || entry.getCategory().isBlank()) {
+                    entry.setCategory(currentCategory);
+                }
                 return entry;
             }
         }
