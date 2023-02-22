@@ -88,6 +88,14 @@ public class StatisticsService {
     }
 
     @Async
+    public CompletableFuture<List<Statistics>> getTopByViewsAndDownloads(int limit) {
+        Pageable pageRequest = PageRequest.of(0, limit);
+        Slice<Statistics> statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDescNumOfDownloadsDesc(pageRequest);
+        List<Statistics> statisticsList = statisticsSlice.getContent();
+        return CompletableFuture.completedFuture(statisticsList);
+    }
+
+    @Async
     public CompletableFuture<List<Statistics>> getTopByViews(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDesc(pageRequest);

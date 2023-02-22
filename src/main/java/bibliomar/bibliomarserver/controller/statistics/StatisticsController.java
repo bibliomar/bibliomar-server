@@ -21,6 +21,12 @@ public class StatisticsController {
         this.statisticsService = statisticsService;
     }
 
+    @GetMapping("/top")
+    public List<Statistics> getTop(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+        List<Statistics> top = statisticsService.getTopByViewsAndDownloads(limit).get();
+        return top;
+    }
+
     @GetMapping("/top/views")
     public List<Statistics> getTopByViews(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
         List<Statistics> top = statisticsService.getTopByViews(limit).get();
