@@ -25,6 +25,9 @@ public class Statistics {
     @Column(name = "topic", nullable = false)
     private Topics topic;
 
+    @Column(name = "language", columnDefinition = "VARCHAR(60)")
+    private String language;
+
     @Column(name = "views", columnDefinition = "BIGINT DEFAULT 0", nullable = false)
     private Long numOfViews = 0L;
 

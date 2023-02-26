@@ -19,5 +19,11 @@ public interface StatisticsRepository extends CrudRepository<Statistics, String>
 
     Slice<Statistics> findAllByOrderByNumOfViewsDescNumOfDownloadsDesc(Pageable pageRequest);
 
+    Slice<Statistics> findAllByLanguageIgnoreCaseOrderByNumOfViewsDesc(String language, Pageable pageRequest);
+
+    Slice<Statistics> findAllByLanguageIgnoreCaseOrderByNumOfDownloadsDesc(String language, Pageable pageRequest);
+
+    Slice<Statistics> findAllByLanguageIgnoreCaseOrderByNumOfViewsDescNumOfDownloadsDesc(String language, Pageable pageRequest);
+
     Slice<Statistics> findAllByTopicOrderByNumOfViewsDesc(Topics topic, Pageable pageRequest);
 }
