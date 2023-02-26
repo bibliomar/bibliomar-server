@@ -60,7 +60,9 @@ public class Statistics {
         Statistics statistics = new Statistics();
         statistics.setMD5(metadata.getMD5());
         statistics.setTopic(metadata.getTopic());
+        System.out.println("METADATA LANGUAGE IS: " + metadata.getLanguage());
         statistics.setLanguage(metadata.getLanguage());
+        System.out.println("STATISTICS LANGUAGE IS: " + statistics.getLanguage());
 
         if (metadata instanceof FictionMetadata && metadata.getTopic() == Topics.fiction) {
             statistics.setFictionMetadataReference((FictionMetadata) metadata);
