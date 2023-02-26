@@ -22,20 +22,20 @@ public class StatisticsController {
     }
 
     @GetMapping("/top")
-    public List<Statistics> getTop(@RequestParam(name = "limit", defaultValue = "10") int limit, @RequestParam(required = false) String language) throws ExecutionException, InterruptedException {
-        List<Statistics> top = statisticsService.getTopByViewsAndDownloads(limit, language).get();
+    public List<Statistics> getTop(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+        List<Statistics> top = statisticsService.getTopByViewsAndDownloads(limit).get();
         return top;
     }
 
     @GetMapping("/top/views")
-    public List<Statistics> getTopByViews(@RequestParam(name = "limit", defaultValue = "10") int limit, @RequestParam(required = false) String language) throws ExecutionException, InterruptedException {
-        List<Statistics> top = statisticsService.getTopByViews(limit, language).get();
+    public List<Statistics> getTopByViews(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+        List<Statistics> top = statisticsService.getTopByViews(limit).get();
         return top;
     }
 
     @GetMapping("/top/downloads")
-    public List<Statistics> getTopByDownloads(@RequestParam(name = "limit", defaultValue = "10") int limit, @RequestParam(required = false) String language) throws ExecutionException, InterruptedException {
-        List<Statistics> top = statisticsService.getTopByDownloads(limit, language).get();
+    public List<Statistics> getTopByDownloads(@RequestParam(name = "limit", defaultValue = "10") int limit) throws ExecutionException, InterruptedException {
+        List<Statistics> top = statisticsService.getTopByDownloads(limit).get();
         return top;
     }
 

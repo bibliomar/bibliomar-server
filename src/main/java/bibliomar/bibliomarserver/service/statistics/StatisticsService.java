@@ -89,44 +89,32 @@ public class StatisticsService {
     }
 
     @Async
-    public CompletableFuture<List<Statistics>> getTopByViewsAndDownloads(int limit, String language) {
+    public CompletableFuture<List<Statistics>> getTopByViewsAndDownloads(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice;
-        if (language != null && !language.isBlank()){
-            statisticsSlice = statisticsRepository.findAllByLanguageIgnoreCaseOrderByNumOfViewsDescNumOfDownloadsDesc(language, pageRequest);
-
-        } else {
-            statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDescNumOfDownloadsDesc(pageRequest);
-        }
+        statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDescNumOfDownloadsDesc(pageRequest);
 
         List<Statistics> statisticsList = statisticsSlice.getContent();
         return CompletableFuture.completedFuture(statisticsList);
     }
 
     @Async
-    public CompletableFuture<List<Statistics>> getTopByViews(int limit, String language) {
+    public CompletableFuture<List<Statistics>> getTopByViews(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice;
-        if (language != null && !language.isBlank()){
-            statisticsSlice = statisticsRepository.findAllByLanguageIgnoreCaseOrderByNumOfViewsDesc(language, pageRequest);
+        statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDesc(pageRequest);
 
-        } else {
-            statisticsSlice = statisticsRepository.findAllByOrderByNumOfViewsDesc(pageRequest);
-        }
         List<Statistics> statisticsList = statisticsSlice.getContent();
         return CompletableFuture.completedFuture(statisticsList);
     }
 
     @Async
-    public CompletableFuture<List<Statistics>> getTopByDownloads(int limit, String language) {
+    public CompletableFuture<List<Statistics>> getTopByDownloads(int limit) {
         Pageable pageRequest = PageRequest.of(0, limit);
         Slice<Statistics> statisticsSlice;
-        if (language != null && !language.isBlank()){
-            statisticsSlice = statisticsRepository.findAllByLanguageIgnoreCaseOrderByNumOfDownloadsDesc(language, pageRequest);
 
-        } else {
-            statisticsSlice = statisticsRepository.findAllByOrderByNumOfDownloadsDesc(pageRequest);
-        }
+        statisticsSlice = statisticsRepository.findAllByOrderByNumOfDownloadsDesc(pageRequest);
+
         List<Statistics> statisticsList = statisticsSlice.getContent();
         return CompletableFuture.completedFuture(statisticsList);
     }
