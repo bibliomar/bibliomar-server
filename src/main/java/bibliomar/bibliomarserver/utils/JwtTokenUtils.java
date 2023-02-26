@@ -25,7 +25,7 @@ public class JwtTokenUtils {
     private final String issuer = "bibliomar";
 
     private final Long maxAgeInSeconds = 259200L;
-    private final Long maxPasswordlessAgeInSeconds = 86400L;
+    private final Long maxPasswordlessAgeInSeconds = 3600L;
 
     @PostConstruct
     public void configureJwt() {
