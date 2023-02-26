@@ -14,6 +14,9 @@ import org.hibernate.annotations.NotFoundAction;
 @Setter
 public class FictionMetadata extends Metadata {
 
+    @Column(name = "Identifier", columnDefinition = "VARCHAR(400)")
+    protected String identifier;
+
     @ManyToOne
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "MD5", referencedColumnName = "MD5", insertable = false, updatable = false,

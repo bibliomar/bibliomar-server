@@ -14,6 +14,9 @@ import org.hibernate.annotations.NotFoundAction;
 @Table(name = "updated")
 public class ScitechMetadata extends Metadata {
 
+    @Column(name = "Identifier", columnDefinition = "VARCHAR(300)")
+    protected String identifier;
+
     @Column(name = "VolumeInfo", columnDefinition = "VARCHAR(100)")
     private String volumeInfo;
 
