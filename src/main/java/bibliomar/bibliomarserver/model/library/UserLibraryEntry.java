@@ -24,6 +24,7 @@ public class UserLibraryEntry extends Metadata {
     @NotEmpty
     private String category;
 
+    @JsonProperty
     private Instant addedOnLibraryAt;
 
     public UserLibraryEntry(Metadata baseMetadata) {

@@ -104,7 +104,6 @@ public class UserLibrary {
         }
         removeEntry(entryToMove);
         entryToMove.setCategory(targetCategory);
-        entryToMove.setTimeLastModified(Instant.now());
         appendEntry(entryToMove);
     }
 
