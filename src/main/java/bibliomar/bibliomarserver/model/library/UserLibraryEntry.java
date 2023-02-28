@@ -2,6 +2,7 @@ package bibliomar.bibliomarserver.model.library;
 
 import bibliomar.bibliomarserver.model.metadata.Metadata;
 import bibliomar.bibliomarserver.utils.contants.Topics;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,6 +26,7 @@ public class UserLibraryEntry extends Metadata {
     private String category;
 
     @JsonProperty
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Instant addedOnLibraryAt;
 
     public UserLibraryEntry(Metadata baseMetadata) {
