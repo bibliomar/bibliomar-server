@@ -10,18 +10,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class UserLibraryEntry extends Metadata {
 
-    @Transient
     @JsonProperty
     private Topics topic;
 
     @NotNull
     @NotEmpty
     private String category;
+
+    private Instant addedOnLibraryAt;
 
     public UserLibraryEntry(Metadata baseMetadata) {
         this.importMetadata(baseMetadata);

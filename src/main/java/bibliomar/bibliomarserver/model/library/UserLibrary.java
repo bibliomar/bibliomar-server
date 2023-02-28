@@ -1,5 +1,6 @@
 package bibliomar.bibliomarserver.model.library;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class UserLibrary {
     @Type(JsonType.class)
     private HashMap<String, UserLibraryEntry> dropped = new HashMap<>();
 
+
     public void removeEntry(UserLibraryEntry entryToRemove) {
         String MD5 = entryToRemove.getMD5();
         String category = entryToRemove.getCategory();
@@ -58,7 +60,7 @@ public class UserLibrary {
     /**
      * Adds an entry to a category.
      * Always prefer this method over a custom implementation.
-     * <p>
+     * <br>
      * The target category is determined by the entry's category field.
      *
      * @param entryToAdd The entry to add.
@@ -75,6 +77,8 @@ public class UserLibrary {
         if (possibleExistingEntry != null) {
             throw new IllegalArgumentException("A entry with the same MD5 is already in the user's library.");
         }
+
+        entryToAdd.setAddedOnLibraryAt(Instant.now());
 
         switch (category) {
             case "reading" -> reading.put(metadataMD5, entryToAdd);
@@ -100,6 +104,7 @@ public class UserLibrary {
         }
         removeEntry(entryToMove);
         entryToMove.setCategory(targetCategory);
+        entryToMove.setTimeLastModified(Instant.now());
         appendEntry(entryToMove);
     }
 
