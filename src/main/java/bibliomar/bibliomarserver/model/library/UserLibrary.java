@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
@@ -41,6 +43,10 @@ public class UserLibrary {
     @Column(name = "dropped", columnDefinition = "json")
     @Type(JsonType.class)
     private HashMap<String, UserLibraryEntry> dropped = new HashMap<>();
+
+    @Transient
+    @JsonProperty
+    private int pagesRead;
 
 
     public void removeEntry(UserLibraryEntry entryToRemove) {
@@ -152,6 +158,26 @@ public class UserLibrary {
             }
         }
         return null;
+    }
+
+    private void buildPagesRead(){
+        int internalPagesRead = 0;
+        for (UserLibraryEntry entry : this.getFinished().values()){
+            try {
+                int pagesAsInt = Integer.parseInt(entry.getPages());
+                internalPagesRead += pagesAsInt;
+            } catch (NumberFormatException e){
+                continue;
+            }
+        }
+
+        this.pagesRead = internalPagesRead;
+    }
+
+    @JsonGetter("pagesRead")
+    private int getPagesRead(){
+        buildPagesRead();
+        return this.pagesRead;
     }
 
 }
