@@ -17,6 +17,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:3001",
                         "http://localhost:5173",
                         "https://bibliomar.netlify.app",
+                        "https://bibliomar.com",
+                        "https://www.bibliomar.com",
+                        "https://beta.bibliomar.com",
                         "https://bibliomar.site",
                         "https://www.bibliomar.site",
                         "https://beta.bibliomar.site")
