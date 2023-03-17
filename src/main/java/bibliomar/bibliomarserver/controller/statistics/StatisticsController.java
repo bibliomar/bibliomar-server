@@ -3,7 +3,7 @@ package bibliomar.bibliomarserver.controller.statistics;
 import bibliomar.bibliomarserver.model.statistics.Statistics;
 import bibliomar.bibliomarserver.service.statistics.StatisticsService;
 import bibliomar.bibliomarserver.utils.MD5;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

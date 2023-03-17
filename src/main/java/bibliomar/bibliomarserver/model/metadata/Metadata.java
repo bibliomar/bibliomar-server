@@ -1,7 +1,7 @@
 package bibliomar.bibliomarserver.model.metadata;
 
 import bibliomar.bibliomarserver.utils.MD5;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -9,10 +9,8 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 
 /**
  * This class is the base class for all metadata.

@@ -1,10 +1,9 @@
 package bibliomar.bibliomarserver.model.library;
 
 import bibliomar.bibliomarserver.model.metadata.Metadata;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

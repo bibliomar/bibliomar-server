@@ -1,6 +1,6 @@
 package bibliomar.bibliomarserver.model.metadata;
 
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import jakarta.validation.constraints.NotNull;
 
 public class MetadataDownloadMirrors {

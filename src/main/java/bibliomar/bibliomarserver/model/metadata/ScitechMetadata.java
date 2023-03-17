@@ -1,6 +1,6 @@
 package bibliomar.bibliomarserver.model.metadata;
 
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -10,7 +10,7 @@ import bibliomar.bibliomarserver.repository.library.UserLibraryRepository;
 import bibliomar.bibliomarserver.repository.metadata.FictionMetadataRepository;
 import bibliomar.bibliomarserver.repository.metadata.ScitechMetadataRepository;
 import bibliomar.bibliomarserver.utils.MD5;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 @Service
 public class UserLibraryService {
