@@ -12,6 +12,7 @@ import org.hibernate.annotations.ColumnDefault;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,11 +27,13 @@ public class User {
 
     @Id
     private String username;
-    @NotNull
+
+    @NotBlank(message = "Password is required.")
     @JsonIgnore
     private String password;
+
     @Email
-    @NotNull
+    @NotNull(message = "Email is required.")
     private String email;
 
     // Do *not* use FetchType.LAZY if you want to return this model as JSON.
@@ -51,6 +54,9 @@ public class User {
     private UserRole role = UserRole.ROLE_USER;
 
     private boolean privateProfile = false;
+
+    private boolean isVerified = false;
+    private boolean isEnabled = true;
 
     public User(String username, String password, String email) {
         this.username = username;

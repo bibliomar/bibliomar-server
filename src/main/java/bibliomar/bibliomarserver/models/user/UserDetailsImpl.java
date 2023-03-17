@@ -62,6 +62,10 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.baseUser.isEnabled();
+    }
+
+    public boolean isVerified() {
+        return this.baseUser.isVerified();
     }
 }
