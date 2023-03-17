@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void checkExistingUser(UserRegisterForm registerForm) {
         User possibleExistingUser = userRepository.findByUsernameOrEmail(registerForm.getUsername(),
-                registerForm.getEmail());
+                registerForm.getEmail()).get();
 
         if (possibleExistingUser != null) {
             if (possibleExistingUser.getUsername().equals(registerForm.getUsername())) {
