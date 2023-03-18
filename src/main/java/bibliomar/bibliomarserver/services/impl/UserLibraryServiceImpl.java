@@ -37,17 +37,14 @@ public class UserLibraryServiceImpl implements UserLibraryService {
     }
 
     @Override
-    public UserLibrary retrieveExistingUserLibrary(String username) {
-        if (!userLibraryRepository.existsByUsername(username)) {
-            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No library found for given username. " + "User may not be registered.");
-        }
-        return userLibraryRepository.findByUsername(username);
+    public UserLibrary retrieveExistingUserLibrary(long id) {
+         return this.userLibraryRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No library found for given username. " + "User may not be registered.")); 
     }
 
     @Async
     @Override
-    public CompletableFuture<Void> removeEntry(String username, MD5 md5) {
-        UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
+    public CompletableFuture<Void> removeEntry(long id, MD5 md5) {
+        UserLibrary userLibrary = this.retrieveExistingUserLibrary(id);
 
         UserLibraryEntry possibleExistingEntry = userLibrary.getEntry(md5.getMD5());
         if (possibleExistingEntry == null) {
@@ -82,8 +79,8 @@ public class UserLibraryServiceImpl implements UserLibraryService {
 
     @Async
     @Override
-    public CompletableFuture<Void> addOrMoveEntry(String username, UserLibraryAddEntryForm addEntryForm) {
-        UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
+    public CompletableFuture<Void> addOrMoveEntry(long id, UserLibraryAddEntryForm addEntryForm) {
+        UserLibrary userLibrary = this.retrieveExistingUserLibrary(id);
         String MD5 = addEntryForm.getMd5();
         Topics topic = addEntryForm.getTopic();
         String targetCategory = addEntryForm.getTargetCategory();
@@ -126,16 +123,15 @@ public class UserLibraryServiceImpl implements UserLibraryService {
 
     @Async
     @Override
-    public CompletableFuture<UserLibrary> getUserLibrary(String username) {
-        UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
+    public CompletableFuture<UserLibrary> getUserLibrary(long id) {
+        UserLibrary userLibrary = this.retrieveExistingUserLibrary(id);
         return CompletableFuture.completedFuture(userLibrary);
     }
 
     @Async
     @Override
-    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(String username, MD5 md5) {
-        this.retrieveExistingUserLibrary(username);
-        UserLibrary userLibrary = userLibraryRepository.findByUsername(username);
+    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(long id, MD5 md5) {
+        UserLibrary userLibrary = this.retrieveExistingUserLibrary(id);
         UserLibraryEntry possibleBook = userLibrary.getEntry(md5.getMD5());
         if (possibleBook == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No book found with given MD5.");
