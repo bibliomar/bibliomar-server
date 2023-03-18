@@ -207,10 +207,10 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
         }
 
-        String jwtPasswordlessToken = jwtTokenUtils.generatePasswordlessToken(possibleExistingUser.getUsername());
+        String tokenValue = this.tokenService.generateToken(possibleExistingUser);          
 
         try {
-            this.mailService.sendRecoveryMail(possibleExistingUser, jwtPasswordlessToken);
+            this.mailService.sendRecoveryMail(possibleExistingUser, tokenValue);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
