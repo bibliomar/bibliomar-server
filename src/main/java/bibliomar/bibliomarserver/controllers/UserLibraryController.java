@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
@@ -23,36 +24,33 @@ public class UserLibraryController {
     private final UserLibraryService userLibraryService;
 
     @Autowired
-    private UserRepository userRepo;
-
-    @Autowired
     public UserLibraryController(UserLibraryService userLibraryService) {
         this.userLibraryService = userLibraryService;
     }
 
     @GetMapping
     public ResponseEntity<UserLibrary> getUserLibrary() throws ExecutionException, InterruptedException {
-         UserDetailsImpl userDetails = (UserDetailsImpl) UserDetailsServiceImpl.getAuthenticatedUser();
-        return ResponseEntity.ok(userLibraryService.getUserLibrary(userDetails.getUserLibrary().getId()).get());
+         UserDetails userDetails =  UserDetailsServiceImpl.getAuthenticatedUser();
+        return ResponseEntity.ok(userLibraryService.getUserLibrary(userDetails.getUsername()).get());
     }
 
     @GetMapping("/{MD5}")
     public ResponseEntity<UserLibraryEntry> getUserLibraryEntry(@Valid MD5 md5) throws ExecutionException, InterruptedException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) UserDetailsServiceImpl.getAuthenticatedUser();
-        return ResponseEntity.ok(userLibraryService.getUserLibraryEntry(userDetails.getUserLibrary().getId(), md5).get());
+        UserDetails userDetails = UserDetailsServiceImpl.getAuthenticatedUser();
+        return ResponseEntity.ok(userLibraryService.getUserLibraryEntry(userDetails.getUsername(), md5).get());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addToUserLibrary(@Valid @RequestBody UserLibraryAddEntryForm addEntryForm) throws ExecutionException, InterruptedException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) UserDetailsServiceImpl.getAuthenticatedUser();
-        userLibraryService.addOrMoveEntry(userDetails.getUserLibrary().getId(), addEntryForm).get();
+        UserDetails userDetails = UserDetailsServiceImpl.getAuthenticatedUser();
+        userLibraryService.addOrMoveEntry(userDetails.getUsername(), addEntryForm).get();
     }
 
     @DeleteMapping("/{MD5}")
     public void removeFromUserLibrary(@Valid MD5 md5) throws ExecutionException, InterruptedException {
-        UserDetailsImpl userDetails = (UserDetailsImpl) UserDetailsServiceImpl.getAuthenticatedUser();
-        userLibraryService.removeEntry(userDetails.getUserLibrary().getId(), md5).get();
+        UserDetails userDetails = UserDetailsServiceImpl.getAuthenticatedUser();
+        userLibraryService.removeEntry(userDetails.getUsername(), md5).get();
     }
 
 }

@@ -25,8 +25,7 @@ import lombok.Setter;
 public class UserLibrary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String username;
 
     @NotNull
     @Column(name = "reading", columnDefinition = "json")
