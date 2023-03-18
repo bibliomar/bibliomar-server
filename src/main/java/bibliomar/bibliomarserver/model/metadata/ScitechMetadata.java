@@ -11,7 +11,7 @@ import org.hibernate.annotations.NotFoundAction;
 @Entity
 @Getter
 @Setter
-@Table(name = "updated")
+@Table(name = "updated", schema = "libgen20_main")
 public class ScitechMetadata extends Metadata {
 
     @Column(name = "Identifier", columnDefinition = "VARCHAR(300)")

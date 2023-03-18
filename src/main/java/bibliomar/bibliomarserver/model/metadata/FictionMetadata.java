@@ -9,7 +9,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 @Entity
-@Table(name = "fiction")
+@Table(name = "fiction", schema = "libgen20_fiction")
 @Getter
 @Setter
 public class FictionMetadata extends Metadata {

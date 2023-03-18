@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "fiction_description")
+@Table(name = "fiction_description", schema = "libgen20_fiction")
 @Getter
 @Setter
 public class FictionDescription {
