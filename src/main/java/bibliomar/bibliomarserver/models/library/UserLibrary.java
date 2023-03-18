@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bibliomar.bibliomarserver.models.user.User;
@@ -48,7 +49,8 @@ public class UserLibrary {
     @Type(JsonType.class)
     private HashMap<String, UserLibraryEntry> dropped = new HashMap<>();
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("userLibrary")
     private User user;
 
     @Transient
