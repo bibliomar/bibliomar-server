@@ -1,6 +1,5 @@
 package bibliomar.bibliomarserver.controllers;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import bibliomar.bibliomarserver.repositories.UserLibraryRepository;
@@ -15,16 +14,13 @@ import org.springframework.web.bind.annotation.*;
 
 import bibliomar.bibliomarserver.config.UserDetailsServiceImpl;
 import bibliomar.bibliomarserver.config.jwt.JwtTokenResponse;
-import bibliomar.bibliomarserver.models.library.UserLibrary;
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.models.user.forms.UserLoginForm;
-import bibliomar.bibliomarserver.models.user.forms.UserRecoverForm;
+import bibliomar.bibliomarserver.models.user.forms.UserRecoveryForm;
 import bibliomar.bibliomarserver.models.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.models.user.forms.UserUpdateForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
-import javax.print.attribute.standard.Media;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,8 +56,19 @@ public class UserController {
     }
 
     @PostMapping(path = "/recover", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void userRecover(@Valid @RequestBody UserRecoverForm recoverForm) throws ExecutionException, InterruptedException {
-        this.userService.sendRecoveryEmail(recoverForm).get();
+    public void userRecover(@Valid @RequestBody UserRecoveryForm recoveryForm) throws ExecutionException, InterruptedException {
+        this.userService.sendRecoveryEmail(recoveryForm).get();
+    }
+
+
+    @PostMapping(path = "/verify", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void userVerify(@Valid @RequestBody UserRecoveryForm recoveryForm) throws ExecutionException, InterruptedException {
+        this.userService.sendVerificationEmail(recoveryForm).get();
+    }
+
+    @PostMapping(path = "/verify/{token}")
+    public void verifyUser(@PathVariable String token) throws ExecutionException, InterruptedException {
+        this.userService.verifyUser(token).get();
     }
 
 

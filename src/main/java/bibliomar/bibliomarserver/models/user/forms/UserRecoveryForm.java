@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class UserRecoverForm {
+public class UserRecoveryForm {
     @Email
     @NotNull
     private String email;

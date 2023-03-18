@@ -1,7 +1,7 @@
 package bibliomar.bibliomarserver.repositories;
 
 import bibliomar.bibliomarserver.models.statistics.Statistics;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;

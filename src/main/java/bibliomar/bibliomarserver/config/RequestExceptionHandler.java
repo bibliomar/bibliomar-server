@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -60,6 +61,18 @@ public class RequestExceptionHandler {
         errorsResponseMap.put("time", Instant.now());
 
         return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(errorsResponseMap);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<?> handleDisabledException(HttpServletRequest request,
+                                                     DisabledException ex) {
+        Map<String, Object> errorsResponseMap = new HashMap<>();
+        errorsResponseMap.put("status", HttpStatus.FORBIDDEN);
+        errorsResponseMap.put("errors", ex.getMessage());
+        errorsResponseMap.put("message", ex.getMessage());
+        errorsResponseMap.put("path", request.getServletPath());
+        errorsResponseMap.put("time", Instant.now());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).contentType(MediaType.APPLICATION_JSON).body(errorsResponseMap);
     }
 
 }

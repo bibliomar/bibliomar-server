@@ -2,7 +2,7 @@ package bibliomar.bibliomarserver.services;
 
 import bibliomar.bibliomarserver.models.metadata.Metadata;
 import bibliomar.bibliomarserver.models.statistics.Statistics;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

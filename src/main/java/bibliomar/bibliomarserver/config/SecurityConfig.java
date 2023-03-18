@@ -54,7 +54,7 @@ public class SecurityConfig {
 
             @Override
             public void check(UserDetails toCheck) {
-                if(((UserDetailsImpl) toCheck).isVerified()) {
+                if(!((UserDetailsImpl) toCheck).isVerified()) {
                     throw new DisabledException("USER_IS_NOT_VERIFIED");
                 }
             }
@@ -85,7 +85,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/user/{username}").permitAll()
-                .requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/recover").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/login", "/user/register", "/user/recover", "/user/verify/**").permitAll()
                 .requestMatchers("/metadata/**").permitAll()
                 .requestMatchers("/search/**").permitAll()
                 .requestMatchers("/statistics/**").permitAll()

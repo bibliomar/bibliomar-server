@@ -1,7 +1,7 @@
 package bibliomar.bibliomarserver.models.library;
 
 import bibliomar.bibliomarserver.models.metadata.Metadata;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Transient;

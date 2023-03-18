@@ -29,6 +29,10 @@ public class MailServiceImpl implements MailService {
         return "https://" + clientUrl + "/user/recover";
     }
 
+    public String getVerificationUrl() {
+        return "https://" + clientUrl + "/user/verify";
+    }
+
     @Override
     public void sendRecoveryMail(User recipient, String token) throws MessagingException {
         String recoverTokenUrl = this.getRecoverUrl() + "?token=" + token;
@@ -47,6 +51,32 @@ public class MailServiceImpl implements MailService {
                 "Best regards, <br>" +
                 "Bibliomar Team";
         sendMail(recipient.getEmail(), subject, body);
+    }
+
+    /**
+     * Sends a verification email to the user
+     * @param recipient
+     * @param token
+     * @throws MessagingException
+     */
+    @Override
+    public void sendVerificationMail(User recipient, String token) throws MessagingException {
+        String verifyAccountAnchor = this.getVerificationUrl() + "?token=" + token;
+        String recoverAnchor = String.format("<a href=\"%s\">VERIFY YOUR ACCOUNT</a>", verifyAccountAnchor);
+        String subject = "Bibliomar Account Verification";
+        // TODO: Update to an actual HTML document
+        String body = "Hello " + recipient.getUsername() + ",\n\n" +
+                "Thank you for using our services. Below you will find a link do verify your account's email address.<br><br>" +
+                recoverAnchor + "<br><br>" +
+                "Alternatively, if you can't click on the above link: <br>" +
+                verifyAccountAnchor + "<br>" +
+                "This link will expire in 30 minutes. <br><br>" +
+                "PS: Your email address is confidential and not shared with third-parties. <br>" +
+                "If you did not request to verify your account, please ignore this email. <br><br>" +
+                "Best regards, <br>" +
+                "Bibliomar Team";
+        sendMail(recipient.getEmail(), subject, body);
+
     }
 
     @Override

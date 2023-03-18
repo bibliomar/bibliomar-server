@@ -3,7 +3,7 @@ package bibliomar.bibliomarserver.models.statistics;
 import bibliomar.bibliomarserver.models.metadata.FictionMetadata;
 import bibliomar.bibliomarserver.models.metadata.Metadata;
 import bibliomar.bibliomarserver.models.metadata.ScitechMetadata;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

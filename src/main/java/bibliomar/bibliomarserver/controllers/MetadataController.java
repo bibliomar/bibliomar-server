@@ -2,7 +2,7 @@ package bibliomar.bibliomarserver.controllers;
 
 import bibliomar.bibliomarserver.models.metadata.Metadata;
 import bibliomar.bibliomarserver.services.MetadataService;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

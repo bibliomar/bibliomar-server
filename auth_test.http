@@ -10,15 +10,19 @@ Content-Type: application/json
 {
   "username": "TestingUser",
   "password": "Testing20@",
-  "email": "testinguser@testing.com"
+  "email": "testing@testing.com"
 }
+
+###
+POST http://localhost:8080/user/verify/M0q5LGPMCYp1bYGuzcrtPPLtuOLnE4a2znUlR0NtxtY=
+Content-Type: application/json
 
 ### Login
 POST http://localhost:8080/user/login
 Content-Type: application/json
 
 {
-  "username": "TestingUser",
+  "usernameOrEmail": "TestingUser",
   "password": "Testing20@"
 }
 
@@ -27,6 +31,6 @@ POST http://localhost:8080/user/recover
 Content-Type: application/json
 
 {
-  "email": "testinguser@testing.com"
+  "email": "testing@testing.com"
 }
 

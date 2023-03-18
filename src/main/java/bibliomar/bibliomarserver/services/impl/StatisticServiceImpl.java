@@ -5,7 +5,7 @@ import bibliomar.bibliomarserver.models.statistics.Statistics;
 import bibliomar.bibliomarserver.repositories.StatisticsRepository;
 import bibliomar.bibliomarserver.services.MetadataService;
 import bibliomar.bibliomarserver.services.StatisticsService;
-import bibliomar.bibliomarserver.utils.contants.Topics;
+import bibliomar.bibliomarserver.utils.constants.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

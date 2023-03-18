@@ -1,6 +1,6 @@
 package bibliomar.bibliomarserver.services.impl;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import bibliomar.bibliomarserver.config.jwt.JwtTokenResponse;
@@ -8,11 +8,12 @@ import bibliomar.bibliomarserver.models.library.UserLibrary;
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.models.user.UserDetailsImpl;
 import bibliomar.bibliomarserver.models.user.forms.UserLoginForm;
-import bibliomar.bibliomarserver.models.user.forms.UserRecoverForm;
+import bibliomar.bibliomarserver.models.user.forms.UserRecoveryForm;
 import bibliomar.bibliomarserver.models.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.models.user.forms.UserUpdateForm;
 import bibliomar.bibliomarserver.repositories.UserRepository;
 import bibliomar.bibliomarserver.services.MailService;
+import bibliomar.bibliomarserver.services.TokenService;
 import bibliomar.bibliomarserver.services.UserService;
 import bibliomar.bibliomarserver.utils.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +45,20 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TokenService tokenService;
+
     @Override
     public void checkExistingUser(UserRegisterForm registerForm) {
-        User possibleExistingUser = userRepository.findByUsernameOrEmail(registerForm.getUsername(),
-                registerForm.getEmail()).get();
+        Optional<User> possibleExistingUser = userRepository.findByUsernameOrEmail(registerForm.getUsername(),
+                registerForm.getEmail());
 
-        if (possibleExistingUser != null) {
-            if (possibleExistingUser.getUsername().equals(registerForm.getUsername())) {
+        if (possibleExistingUser.isPresent()) {
+            User existingUser = possibleExistingUser.get();
+            if (existingUser.getUsername().equals(registerForm.getUsername())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already in use");
             }
-            if (possibleExistingUser.getEmail().equals(registerForm.getEmail())) {
+            if (existingUser.getEmail().equals(registerForm.getEmail())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already in use");
             }
         }
@@ -76,6 +81,12 @@ public class UserServiceImpl implements UserService {
             newUserLibrary.setUsername(newUser.getUsername());
             newUser.setUserLibrary(newUserLibrary);
             this.userRepository.save(newUser);
+
+            // Sends the verification email
+            UserRecoveryForm recoveryForm = new UserRecoveryForm();
+            recoveryForm.setEmail(newUser.getEmail());
+            this.sendVerificationEmail(recoveryForm).get();
+
             return CompletableFuture.completedFuture(null);
 
         } catch (Exception e) {
@@ -103,15 +114,22 @@ public class UserServiceImpl implements UserService {
     @Async
     @Override
     public CompletableFuture<JwtTokenResponse> authUser(UserLoginForm loginForm) {
-        
-        User possibleExistingUser = userRepository.findByUsername(loginForm.getUsername());
-        if (possibleExistingUser == null){
+        // Retrieves the user using the specified username or email
+        // If it's an email, the user's username is used instead
+        Optional<User> possibleExistingUser = userRepository.findByUsernameOrEmail(loginForm.getUsernameOrEmail(), loginForm.getUsernameOrEmail());
+        if (possibleExistingUser.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found with given username.");
-        } else if (possibleExistingUser.isPreMigration()) {
+        } else if (possibleExistingUser.get().isPreMigration()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should ask for password reset");
+        } else if (!possibleExistingUser.get().isVerified()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User should verify email");
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(),
+        // Allows the user to login if the loginForm.usernameOrEmail is an email
+        String usableLoginCredentials = possibleExistingUser.get().getUsername();
+
+        // Make sure to use the loginForm's password, not the user's.
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(usableLoginCredentials,
                 loginForm.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
@@ -123,6 +141,16 @@ public class UserServiceImpl implements UserService {
         JwtTokenResponse jwtTokenResponse = JwtTokenResponse.build(jwtTokenUtils.verifyToken(jwtToken));
         return CompletableFuture.completedFuture(jwtTokenResponse);
 
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Void> verifyUser(String token) {
+        // The validateToken method handles validation and throws exceptions accordingly if needed
+        User verifiedUser = tokenService.validateToken(token);
+        verifiedUser.setVerified(true);
+        userRepository.save(verifiedUser);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Async
@@ -172,7 +200,7 @@ public class UserServiceImpl implements UserService {
 
     @Async
     @Override
-    public CompletableFuture<Void> sendRecoveryEmail(UserRecoverForm recoverForm) {
+    public CompletableFuture<Void> sendRecoveryEmail(UserRecoveryForm recoverForm) {
         User possibleExistingUser = userRepository.findByEmail(recoverForm.getEmail());
         if (possibleExistingUser == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
@@ -186,6 +214,29 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error while sending recovery email.", e);
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<Void> sendVerificationEmail(UserRecoveryForm recoverForm) {
+        User possibleExistingUser = userRepository.findByEmail(recoverForm.getEmail());
+        if (possibleExistingUser == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
+        } else if (possibleExistingUser.isVerified()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already verified.");
+        }
+
+        String verificationToken = tokenService.generateToken(possibleExistingUser);
+
+        try {
+            this.mailService.sendVerificationMail(possibleExistingUser, verificationToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error while sending verification email.", e);
         }
 
         return CompletableFuture.completedFuture(null);

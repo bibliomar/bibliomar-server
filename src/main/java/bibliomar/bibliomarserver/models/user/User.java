@@ -2,6 +2,7 @@ package bibliomar.bibliomarserver.models.user;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -47,6 +48,7 @@ public class User {
     private boolean preMigration = false;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime joinedAt = LocalDateTime.now();
 
     @NotNull
