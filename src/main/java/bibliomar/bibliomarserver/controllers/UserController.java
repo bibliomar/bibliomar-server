@@ -16,7 +16,7 @@ import bibliomar.bibliomarserver.config.UserDetailsServiceImpl;
 import bibliomar.bibliomarserver.config.jwt.JwtTokenResponse;
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.models.user.forms.UserLoginForm;
-import bibliomar.bibliomarserver.models.user.forms.UserRecoveryForm;
+import bibliomar.bibliomarserver.models.user.forms.UserEmailForm;
 import bibliomar.bibliomarserver.models.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.models.user.forms.UserUpdateForm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,13 +56,13 @@ public class UserController {
     }
 
     @PostMapping(path = "/recover", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void userRecover(@Valid @RequestBody UserRecoveryForm recoveryForm) throws ExecutionException, InterruptedException {
+    public void userRecover(@Valid @RequestBody UserEmailForm recoveryForm) throws ExecutionException, InterruptedException {
         this.userService.sendRecoveryEmail(recoveryForm).get();
     }
 
 
     @PostMapping(path = "/verify", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void userVerify(@Valid @RequestBody UserRecoveryForm recoveryForm) throws ExecutionException, InterruptedException {
+    public void userVerify(@Valid @RequestBody UserEmailForm recoveryForm) throws ExecutionException, InterruptedException {
         this.userService.sendVerificationEmail(recoveryForm).get();
     }
 

@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import bibliomar.bibliomarserver.config.jwt.JwtTokenResponse;
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.models.user.forms.UserLoginForm;
-import bibliomar.bibliomarserver.models.user.forms.UserRecoveryForm;
+import bibliomar.bibliomarserver.models.user.forms.UserEmailForm;
 import bibliomar.bibliomarserver.models.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.models.user.forms.UserUpdateForm;
 
@@ -21,6 +21,6 @@ public interface UserService {
     CompletableFuture<Void> verifyUser(String token);
 
     public CompletableFuture<Void> updateUser(UserDetails user, UserUpdateForm updateForm);
-    public CompletableFuture<Void> sendRecoveryEmail(UserRecoveryForm recoverForm);
-    CompletableFuture<Void> sendVerificationEmail(UserRecoveryForm recoverForm);
+    public CompletableFuture<Void> sendRecoveryEmail(UserEmailForm recoverForm);
+    CompletableFuture<Void> sendVerificationEmail(UserEmailForm recoverForm);
 }

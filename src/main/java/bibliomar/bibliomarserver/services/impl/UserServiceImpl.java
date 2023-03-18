@@ -8,7 +8,7 @@ import bibliomar.bibliomarserver.models.library.UserLibrary;
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.models.user.UserDetailsImpl;
 import bibliomar.bibliomarserver.models.user.forms.UserLoginForm;
-import bibliomar.bibliomarserver.models.user.forms.UserRecoveryForm;
+import bibliomar.bibliomarserver.models.user.forms.UserEmailForm;
 import bibliomar.bibliomarserver.models.user.forms.UserRegisterForm;
 import bibliomar.bibliomarserver.models.user.forms.UserUpdateForm;
 import bibliomar.bibliomarserver.repositories.UserRepository;
@@ -83,9 +83,10 @@ public class UserServiceImpl implements UserService {
             this.userRepository.save(newUser);
 
             // Sends the verification email
-            UserRecoveryForm recoveryForm = new UserRecoveryForm();
-            recoveryForm.setEmail(newUser.getEmail());
-            this.sendVerificationEmail(recoveryForm).get();
+            UserEmailForm verificationForm = new UserEmailForm();
+            verificationForm.setEmail(newUser.getEmail());
+
+            this.sendVerificationEmail(verificationForm).get();
 
             return CompletableFuture.completedFuture(null);
 
@@ -200,7 +201,7 @@ public class UserServiceImpl implements UserService {
 
     @Async
     @Override
-    public CompletableFuture<Void> sendRecoveryEmail(UserRecoveryForm recoverForm) {
+    public CompletableFuture<Void> sendRecoveryEmail(UserEmailForm recoverForm) {
         User possibleExistingUser = userRepository.findByEmail(recoverForm.getEmail());
         if (possibleExistingUser == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
@@ -221,14 +222,13 @@ public class UserServiceImpl implements UserService {
 
     @Async
     @Override
-    public CompletableFuture<Void> sendVerificationEmail(UserRecoveryForm recoverForm) {
-        User possibleExistingUser = userRepository.findByEmail(recoverForm.getEmail());
+    public CompletableFuture<Void> sendVerificationEmail(UserEmailForm emailForm) {
+        User possibleExistingUser = userRepository.findByEmail(emailForm.getEmail());
         if (possibleExistingUser == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't belong to any user.");
         } else if (possibleExistingUser.isVerified()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already verified.");
         }
-
         String verificationToken = tokenService.generateToken(possibleExistingUser);
 
         try {
@@ -241,5 +241,5 @@ public class UserServiceImpl implements UserService {
 
         return CompletableFuture.completedFuture(null);
     }
-    
+
 }
