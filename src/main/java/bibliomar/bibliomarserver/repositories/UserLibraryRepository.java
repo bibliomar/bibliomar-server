@@ -1,18 +1,16 @@
 package bibliomar.bibliomarserver.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import bibliomar.bibliomarserver.models.library.UserLibrary;
 
-public interface UserLibraryRepository extends CrudRepository<UserLibrary, String> {
+public interface UserLibraryRepository extends JpaRepository<UserLibrary, String> {
 
     List<UserLibrary> findAll();
 
-    boolean existsByUsername(String username);
+    Optional<UserLibrary> findByUsername(String username);
 
-    UserLibrary findByUsername(String username);
-
-    UserLibrary save(UserLibrary userLibrary);
 }

@@ -38,10 +38,7 @@ public class UserLibraryServiceImpl implements UserLibraryService {
 
     @Override
     public UserLibrary retrieveExistingUserLibrary(String username) {
-        if (!userLibraryRepository.existsByUsername(username)) {
-            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No library found for given username. " + "User may not be registered.");
-        }
-        return userLibraryRepository.findByUsername(username);
+         return this.userLibraryRepository.findByUsername(username).orElseThrow(()-> new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "No library found for given username. " + "User may not be registered.")); 
     }
 
     @Async
@@ -134,8 +131,7 @@ public class UserLibraryServiceImpl implements UserLibraryService {
     @Async
     @Override
     public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(String username, MD5 md5) {
-        this.retrieveExistingUserLibrary(username);
-        UserLibrary userLibrary = userLibraryRepository.findByUsername(username);
+        UserLibrary userLibrary = this.retrieveExistingUserLibrary(username);
         UserLibraryEntry possibleBook = userLibrary.getEntry(md5.getMD5());
         if (possibleBook == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No book found with given MD5.");

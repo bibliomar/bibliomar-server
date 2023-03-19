@@ -40,7 +40,7 @@ public class User {
     // Do *not* use FetchType.LAZY if you want to return this model as JSON.
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
-    @JsonIgnoreProperties("username")
+    @JsonIgnoreProperties("user")
     private UserLibrary userLibrary;
 
     @NotNull

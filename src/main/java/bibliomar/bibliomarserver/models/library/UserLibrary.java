@@ -6,7 +6,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import bibliomar.bibliomarserver.models.user.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
@@ -20,6 +23,7 @@ import lombok.Setter;
 @Setter
 @Table(name = "user_library")
 public class UserLibrary {
+
     @Id
     private String username;
 
@@ -43,6 +47,10 @@ public class UserLibrary {
     @Column(name = "dropped", columnDefinition = "json")
     @Type(JsonType.class)
     private HashMap<String, UserLibraryEntry> dropped = new HashMap<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("userLibrary")
+    private User user;
 
     @Transient
     @JsonProperty
