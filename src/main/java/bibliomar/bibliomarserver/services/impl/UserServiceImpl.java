@@ -78,11 +78,12 @@ public class UserServiceImpl implements UserService {
             newUser.setPassword(hashedPassword);
 
             UserLibrary newUserLibrary = new UserLibrary();
-            newUserLibrary.setUsername(newUser.getUsername());
+            newUserLibrary.setUsername(registerForm.getUsername());
             newUser.setUserLibrary(newUserLibrary);
             this.userRepository.save(newUser);
 
             // Sends the verification email
+
             UserEmailForm verificationForm = new UserEmailForm();
             verificationForm.setEmail(newUser.getEmail());
 
@@ -207,10 +208,10 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email doesn't correspond to any user.");
         }
 
-        String tokenValue = this.tokenService.generateToken(possibleExistingUser);          
+        String jwtPasswordlessToken = jwtTokenUtils.generatePasswordlessToken(possibleExistingUser.getUsername());;          
 
         try {
-            this.mailService.sendRecoveryMail(possibleExistingUser, tokenValue);
+            this.mailService.sendRecoveryMail(possibleExistingUser, jwtPasswordlessToken);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
