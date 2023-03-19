@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import bibliomar.bibliomarserver.models.user.User;
 import bibliomar.bibliomarserver.services.MailService;
@@ -17,6 +19,9 @@ public class MailServiceImpl implements MailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private TemplateEngine templateEngine;
 
     @Value("${bibliomar.client.url}")
     private String clientUrl;
@@ -35,22 +40,19 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendRecoveryMail(User recipient, String token) throws MessagingException {
-        String recoverTokenUrl = this.getRecoverUrl() + "?token=" + token;
-        String recoverAnchor = String.format("<a href=\"%s\">RECOVER ACCOUNT</a>", recoverTokenUrl);
-        String subject = "Bibliomar Account Recovery";
-        // TODO: Update to an actual HTML document
-        String body = "Hello " + recipient.getUsername() + ",\n\n" +
-                "You have requested to recover your account. Please click the link below to reset your password. <br><br>" +
-                recoverAnchor + "<br><br>" +
-                "Alternatively, if you can't click on the above link: <br>" +
-                recoverTokenUrl + "<br>" +
-                "This link will expire in 1 hour. <br><br>" +
-                "PS: Do NOT share this email. <br>" +
-                "It contains an URL that can be used to access your personal Bibliomar account. <br>" +
-                "If you did not request to recover your password, please ignore this email. <br><br>" +
-                "Best regards, <br>" +
-                "Bibliomar Team";
-        sendMail(recipient.getEmail(), subject, body);
+
+        String recoverAccountLink = this.getRecoverUrl() + "?token=" + token;
+
+        Context context = new Context();
+        context.setVariable("recoverAccountLink", recoverAccountLink);
+        context.setVariable("userEmail", recipient.getEmail());
+
+        String body = templateEngine.process("account_recover.html", context);
+        try {
+            sendMail(recipient.getEmail(), "Bibliomar Account Recovery", body);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -61,21 +63,15 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendVerificationMail(User recipient, String token) throws MessagingException {
+        
         String verifyAccountAnchor = this.getVerificationUrl() + "?token=" + token;
-        String recoverAnchor = String.format("<a href=\"%s\">VERIFY YOUR ACCOUNT</a>", verifyAccountAnchor);
-        String subject = "Bibliomar Account Verification";
-        // TODO: Update to an actual HTML document
-        String body = "Hello " + recipient.getUsername() + ",\n\n" +
-                "Thank you for using our services. Below you will find a link do verify your account's email address.<br><br>" +
-                recoverAnchor + "<br><br>" +
-                "Alternatively, if you can't click on the above link: <br>" +
-                verifyAccountAnchor + "<br>" +
-                "This link will expire in 30 minutes. <br><br>" +
-                "PS: Your email address is confidential and not shared with third-parties. <br>" +
-                "If you did not request to verify your account, please ignore this email. <br><br>" +
-                "Best regards, <br>" +
-                "Bibliomar Team";
-        sendMail(recipient.getEmail(), subject, body);
+
+        Context context = new Context();
+        context.setVariable("verifyAccountLink", verifyAccountAnchor);
+        context.setVariable("userEmail", recipient.getEmail());
+        String body = templateEngine.process("account_verification.html", context);
+       
+        sendMail(recipient.getEmail(), "Account Verification Confirmation", body);
 
     }
 

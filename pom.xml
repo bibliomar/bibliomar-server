@@ -63,6 +63,13 @@
             <version>2.5.4</version>
         </dependency>
 
+        <!-- to render mail only, otherwise do *not* use it for front-end  -->
+        
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>

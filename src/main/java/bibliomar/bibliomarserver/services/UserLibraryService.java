@@ -12,11 +12,11 @@ import java.util.concurrent.CompletableFuture;
 public interface UserLibraryService {
 
    
-    public UserLibrary retrieveExistingUserLibrary(long id);
-    public CompletableFuture<Void> removeEntry(long id, MD5 md5);
+    public UserLibrary retrieveExistingUserLibrary(String usernameString);
+    public CompletableFuture<Void> removeEntry(String username, MD5 md5);
     public void appendToLibrary(UserLibrary userLibrary, Metadata metadata, String targetCategory);
-    public CompletableFuture<Void> addOrMoveEntry(long id, UserLibraryAddEntryForm addEntryForm);
-    public CompletableFuture<UserLibrary> getUserLibrary(long id);
-    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(long id, MD5 md5);
+    public CompletableFuture<Void> addOrMoveEntry(String username, UserLibraryAddEntryForm addEntryForm);
+    public CompletableFuture<UserLibrary> getUserLibrary(String username);
+    public CompletableFuture<UserLibraryEntry> getUserLibraryEntry(String username, MD5 md5);
 
 }
