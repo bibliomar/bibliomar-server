@@ -45,7 +45,7 @@ public class MailServiceImpl implements MailService {
 
         Context context = new Context();
         context.setVariable("recoverAccountLink", recoverAccountLink);
-        context.setVariable("userEmail", recipient.getEmail());
+        context.setVariable("userUsername", recipient.getUsername());
 
         String body = templateEngine.process("account_recover.html", context);
         try {
@@ -68,10 +68,10 @@ public class MailServiceImpl implements MailService {
 
         Context context = new Context();
         context.setVariable("verifyAccountLink", verifyAccountAnchor);
-        context.setVariable("userEmail", recipient.getEmail());
+        context.setVariable("userUsername", recipient.getUsername());
         String body = templateEngine.process("account_verification.html", context);
        
-        sendMail(recipient.getEmail(), "Account Verification Confirmation", body);
+        sendMail(recipient.getEmail(), "Bibliomar Account Verification", body);
 
     }
 

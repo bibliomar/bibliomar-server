@@ -61,16 +61,19 @@
     </div>
     <!-- Content -->
     <div class="content">
-        <p>Hello [(${userEmail})],</p>
-        <p>You have requested to recover your account  please click the button below to recover your account:</p>
+        <p>Hello [(${userUsername})],</p>
+        <p>You have requested to recover your Bibliomar account. Please click the button below to recover your account:</p>
         <p><a th:href="@{${recoverAccountLink}}">Recover Your Account</a></p>
+        <br>
+        <p>Alternatively, you can also use this URL:</p>
+        <span>[(${recoverAccountLink})]</span>
         <p>If you didn't initiate this request, please ignore this email.</p>
         <br>
-        <p>This request is only valid for about 30 minutes, otherwise your requested will be expire and will be invalid.</p>
+        <p>This link is only valid for 1 hour, and will expire afterwards.</p>
     </div>
     <!-- Footer -->
     <div class="footer">
-        <p>This email was sent by automated on request for recovering account on our website.
+        <p>This email was sent automatically. </p>
     </div>    
 </body>
 </html>
