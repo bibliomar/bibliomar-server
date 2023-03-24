@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "description", schema = "libgen20_main")
+@Table(name = "description", catalog = "libgen20_main")
 @Getter
 @Setter
 public class ScitechDescription {
