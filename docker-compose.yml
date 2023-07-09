@@ -10,8 +10,15 @@ services:
 
     env_file: .env
 
+    environment:
+      - MYSQL_URL=jdbc:mysql://host.docker.internal:3306/bibliomar
+
     deploy:
       replicas: 3
       restart_policy:
         condition: on-failure
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 
