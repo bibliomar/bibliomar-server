@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  server:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "8080-8082:8080"
+
+    env_file: .env
+
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+
