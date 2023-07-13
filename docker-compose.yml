@@ -15,6 +15,14 @@ services:
       replicas: 3
       restart_policy:
         condition: on-failure
+        
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.portainer-secure.entrypoints=websecure
+      - traefik.http.routers.portainer-secure.rule=Host(`${BIBLIOMAR_SERVER_URL}`)
+      - traefik.http.routers.portainer-secure.service=bibliomar-server
+      - traefik.http.services.bibliomar-server.loadbalancer.server.port=8080-8082
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
