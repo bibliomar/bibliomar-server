@@ -8,8 +8,6 @@ services:
     ports:
       - "8080-8082:8080"
 
-    env_file: .env
-
     environment:
       - MYSQL_URL=jdbc:mysql://host.docker.internal:3306/bibliomar
 
